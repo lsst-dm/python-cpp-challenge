@@ -20,7 +20,8 @@ The formal definition of the desired Python interface is defined by the unit tes
 
 1. Fork this repository.
 2. Create a *branch* for your solution, named after the binding tool and/or any other identifier unique to your approach.
-3. Write some bindings.
+3. Create a directory with the same name as the branch.
+3. Write some bindings, putting all new code in the new directory.
 4. Add a build system: autotools, cmake, scons, and any other standard build tool is welcome, but utilizing just Python distutils is a bonus.
 5. Run the tests.
 6. Submit your solution as a PR, and summarize your approach and test results there for discussion.
