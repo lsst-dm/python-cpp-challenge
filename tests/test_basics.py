@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import unittest
 
 import challenge.basics
@@ -88,3 +90,6 @@ class DoodadTestCase(unittest.TestCase):
         """
         d = challenge.basics.Doodad("j", 8)
         self.assertEqual(d.write(), ("j", 8))
+
+if __name__ == "__main__":
+    unittest.main()
