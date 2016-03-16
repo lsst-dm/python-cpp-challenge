@@ -33,7 +33,7 @@ std::unique_ptr<basics::Doodad> Thingamajig<T>::clone() const {
     );
 }
 
-template class Thingamajig<std::complex<float>>;
+template class Thingamajig<std::complex<double>>;
 template class Thingamajig<basics::Doodad>;
 
 } // namespace things

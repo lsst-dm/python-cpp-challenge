@@ -6,10 +6,10 @@
 namespace extensions {
 
 // In Python, we'd ideally like to wrap this as a single Thingamajig type with
-// a "dtype" attribute and constructor argument that can be any of
-// (complex<float>, Doodad).
-// But we may want to start with two distinct Thingamajig types in Python
-// (one for each instantiation).
+// a "dtype" attribute and constructor argument that can be either of
+// (std::complex<double>, Doodad).
+// But since that's hard, we recommend starting with just support for
+// std::complex<double>, which should be sufficient to pass many tests.
 template <typename T>
 class Thingamajig : public basics::Doodad {
 public:
@@ -17,11 +17,13 @@ public:
     // Keyword arguments and default values should work in Python.
     Thingamajig(T extra, std::string const & name, double value=1);
 
-    // Copy construction is disabled to ensure bindings don't make unnecessary copies.
+    // Copy construction is disabled to ensure bindings don't make unnecessary
+    // copies.
     Thingamajig(Thingamajig const &) = delete;
     Thingamajig& operator=(Thingamajig const &) = delete;
 
-    // Move construction is allowed, but is not expected to be exposed to Python.
+    // Move construction is allowed, but is not expected to be exposed to
+    // Python.
     Thingamajig(Thingamajig &&) = default;
     Thingamajig& operator=(Thingamajig &&) = default;
 
