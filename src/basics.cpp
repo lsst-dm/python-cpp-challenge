@@ -2,21 +2,35 @@
 
 namespace basics {
 
-static std::size_t & internal_instance_count() {
+namespace {
+
+std::size_t & internal_secret_count() {
     static std::size_t count = 0;
     return count;
 }
 
+} // anonymous
+
+Secret::Secret() : _index(++internal_secret_count()) {}
+
+bool compare(Secret const & a, Secret const & b) {
+    return a._index == b._index;
+}
+
+bool adjacent(Secret const & a, Secret const & b) {
+    return a._index + 1u == b._index;
+}
+
 Doodad::Doodad(std::string const & name_, int value_) :
     name(name_), value(value_)
-{
-    ++internal_instance_count();
-}
+{}
 
 Doodad::Doodad(WhatsIt const & it) : name(it.a), value(it.b) {}
 
+Doodad::~Doodad() {}
+
 std::unique_ptr<Doodad> Doodad::clone() const {
-    return std::unique_ptr<Doodad>(new Doodad(*this));
+    return std::unique_ptr<Doodad>(new Doodad(name, value));
 }
 
 void Doodad::read(WhatsIt const & it) {
@@ -27,10 +41,6 @@ void Doodad::read(WhatsIt const & it) {
 WhatsIt Doodad::write() const {
     WhatsIt it = {name, value};
     return it;
-}
-
-std::size_t Doodad::get_instance_count() {
-    return internal_instance_count();
 }
 
 } // namespace basics

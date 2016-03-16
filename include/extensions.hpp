@@ -17,6 +17,14 @@ public:
     // Keyword arguments and default values should work in Python.
     Thingamajig(T extra, std::string const & name, double value=1);
 
+    // Copy construction is disabled to ensure bindings don't make unnecessary copies.
+    Thingamajig(Thingamajig const &) = delete;
+    Thingamajig& operator=(Thingamajig const &) = delete;
+
+    // Move construction is allowed, but is not expected to be exposed to Python.
+    Thingamajig(Thingamajig &&) = default;
+    Thingamajig& operator=(Thingamajig &&) = default;
+
     // In Python, this should ideally return a Thingamajig instance, not just
     // a Doodad.
     virtual std::unique_ptr<basics::Doodad> clone() const;
@@ -28,8 +36,6 @@ public:
     // reference in Python.
     T const & get_extra() const { return _extra; }
     T & get_extra() { return _extra; }
-
-    void set_extra(T const & extra) { _extra = extra; }
 
 private:
     T _extra;
