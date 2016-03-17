@@ -22,11 +22,14 @@ The formal definition of the desired Python interface is defined by the unit tes
 2. Create a *branch* for your solution, named after the binding tool and/or any other identifier unique to your approach.
 3. Create a directory with the same name as the branch.
 3. Write some bindings, putting all new code in the new directory.
-4. Add a build system: autotools, cmake, scons, and any other standard build tool is welcome, but utilizing just Python distutils is a bonus.
-5. Run the tests.
-6. Submit your solution as a PR, and summarize your approach and test results there for discussion.
+4. Add a build system: autotools, cmake, scons, and any other standard build tool is welcome, but utilizing just Python distutils/setuptools is a bonus.  Include a way to run the scripts in the test directory.
+5. Add a README file to your directory, summarizing your approach and the
+test results (useful submissions need not pass all tests).
+6. Submit your solution as a PR for discussion.
 
-We will not actually be merging solution branches to master, but we hope to collect them within the original repository.  That allows new challenges to be added to master without disrupting existing solutions.
+You can also use the python2-c-api directory as an example; this contains a mostly-complete (but not at all concise) solution that just uses the Python C API.
+
+We will not actually be merging solution branches to master, but we hope to collect them on branches within the original repository.  That allows new challenges to be added to master without disrupting existing solutions.
 
 ## Submitting a Challenge
 

@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
 import unittest
+import sys
 
-import challenge.basics
-import challenge.extensions
+# Defer import errors to test errors, to avoid short-circuiting other tests
+try:
+    import challenge.basics
+    import challenge.extensions
+except ImportError:
+    pass
 
 
 class ThingamajigTestMixin(object):

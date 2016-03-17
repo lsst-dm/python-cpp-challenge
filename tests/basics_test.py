@@ -2,8 +2,11 @@
 
 import unittest
 
-import challenge.basics
-
+# Defer import errors to test errors, to avoid short-circuiting other tests
+try:
+    import challenge.basics
+except ImportError:
+    pass
 
 class DoodadTestCase(unittest.TestCase):
     """Test case for for Doodad bindings.
