@@ -322,6 +322,23 @@ PyTypeObject * Py<Doodad>::get_type() {
     return &t;
 }
 
+bool Py<Doodad>::check(PyObject * p) {
+    int r = PyObject_IsSubclass(
+        (PyObject*)p->ob_type,
+        (PyObject*)Py<Doodad>::get_type()
+    );
+    if (r < 0) {
+        PyErr_Clear();
+        return false;
+    }
+    return r;
+}
+
+bool is_frozen(PyObject * p) {
+    PyDoodad * d = reinterpret_cast<PyDoodad *>(p);
+    return d->frozen;
+}
+
 PyObject * Py<Doodad>::to_python(std::shared_ptr<Doodad> s) {
     PyDoodad * result = PyDoodad_new(Py<Doodad>::get_type(), nullptr, nullptr);
     if (result) {
@@ -340,7 +357,7 @@ PyObject * Py<Doodad>::to_python(std::shared_ptr<Doodad const> s) {
 }
 
 bool Py<Doodad>::sptr_from_python(PyObject * p, std::shared_ptr<Doodad> * s) {
-    if (p->ob_type == Py<Doodad>::get_type()) {
+    if (check(p)) {
         PyDoodad * d = reinterpret_cast<PyDoodad*>(p);
         *reinterpret_cast<std::shared_ptr<Doodad>*>(s) = d->instance;
         if (d->frozen) {
@@ -356,7 +373,7 @@ bool Py<Doodad>::sptr_from_python(PyObject * p, std::shared_ptr<Doodad> * s) {
 bool Py<Doodad>::csptr_from_python(
     PyObject * p, std::shared_ptr<Doodad const> * s
 ) {
-    if (p->ob_type == Py<Doodad>::get_type()) {
+    if (check(p)) {
         PyDoodad * d = reinterpret_cast<PyDoodad*>(p);
         *reinterpret_cast<std::shared_ptr<Doodad>*>(s) = d->instance;
         return true;
