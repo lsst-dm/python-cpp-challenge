@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+import unittest
+import challenge.basics
+import challenge.converters
+
+class SwigTestCase(unittest.TestCase):
+    """Test case for for Swig typemaps for Doodads.
+    """
+
+    def test_shared_ptr_return(self):
+        """Test that a Swig-built module can return a "shared_ptr<Doodad>".
+        """
+        r = challenge.converters.make_sptr("a", 5)
+        self.assertIsInstance(r, challenge.basics.Doodad)
+        self.assertEqual(r.name, "a")
+        self.assertEqual(r.value, 5)
+
+    def test_pass_reference(self):
+        """Test that a Swig-built module can accept "Doodad &".
+        """
+        d = challenge.basics.Doodad("b", 6)
+        self.assertTrue(challenge.converters.accept_ref(d, "b", 6))
+
+    def test_pass_const_reference(self):
+        """Test that a Swig-built module can accept "Doodad const &".
+        """
+        d = challenge.basics.Doodad("c", 7)
+        self.assertTrue(challenge.converters.accept_cref(d, "c", 7))
+
+    def test_pass_reference(self):
+        """Test that a Swig-built module can accept "shared_ptr<Doodad>".
+        """
+        d = challenge.basics.Doodad("d", 8)
+        self.assertTrue(challenge.converters.accept_sptr(d, "d", 8))
+
+    def test_pass_const_reference(self):
+        """Test that a Swig-built module can accept "shared_ptr<Doodad const>".
+        """
+        d = challenge.basics.Doodad("e", 9)
+        self.assertTrue(challenge.converters.accept_csptr(d, "e", 9))
+
+if __name__ == "__main__":
+    unittest.main()

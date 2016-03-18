@@ -11,7 +11,20 @@ basics_module = Extension(
         os.path.join('..', 'include'),
         os.path.join('include')
     ],
-    extra_compile_args=['-O0', '-std=c++11']
+    extra_compile_args=['-std=c++11']
+)
+
+converters_module = Extension(
+    'challenge.converters',
+    sources=[
+        os.path.join('challenge', 'converters.i')
+    ],
+    include_dirs=[
+        os.path.join('..', 'include'),
+        os.path.join('include')
+    ],
+    swig_opts = ["-modern", "-c++", "-Iinclude", "-noproxy"],
+    extra_compile_args=['-std=c++11']
 )
 
 setup(
@@ -20,5 +33,6 @@ setup(
     version='1.0',
     test_suite = 'tests',
     description='C++/Python bindings challenge with raw Python C API',
-    ext_modules=[basics_module]
+    ext_modules=[basics_module, converters_module],
+    #py_modules=["challenge.converters"],
 )

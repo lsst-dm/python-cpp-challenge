@@ -19,17 +19,14 @@ The formal definition of the desired Python interface is defined by the unit tes
 ## Submitting a Solution
 
 1. Fork this repository.
-2. Create a *branch* for your solution, named after the binding tool and/or any other identifier unique to your approach.
-3. Create a directory with the same name as the branch.
+2. Create a directory with the same name as the branch.
 3. Write some bindings, putting all new code in the new directory.
-4. Add a build system: autotools, cmake, scons, and any other standard build tool is welcome, but utilizing just Python distutils/setuptools is a bonus.  Include a way to run the scripts in the test directory.
+4. Add a build system: autotools, cmake, scons, and any other standard build tool is welcome, but utilizing just Python distutils/setuptools is a bonus.  Include a way to run the scripts in the test directory, and if you're attempting the Swig conversions test, be sure to build conversions.i as well.
 5. Add a README file to your directory, summarizing your approach and the
 test results (useful submissions need not pass all tests).
 6. Submit your solution as a PR for discussion.
 
-You can also use the python2-c-api directory as an example; this contains a mostly-complete (but not at all concise) solution that just uses the Python C API.
-
-We will not actually be merging solution branches to master, but we hope to collect them on branches within the original repository.  That allows new challenges to be added to master without disrupting existing solutions.
+You can also use the python2-c-api directory as an example; this contains a mostly-complete (but not at all concise) solution that just uses the Python C API, along with a setuptools build that works if you create symlinks for tests and the Swig source (as is done in this directory).
 
 ## Submitting a Challenge
 
