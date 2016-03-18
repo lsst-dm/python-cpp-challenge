@@ -86,5 +86,13 @@ class DoodadTestCase(unittest.TestCase):
         d = challenge.basics.Doodad("j", 8)
         self.assertEqual(d.write(), ("j", 8))
 
+    def test_const(self):
+        """Test that modifying const Doodds is not allowed.
+        """
+        d = challenge.basics.Doodad.get_const()
+        self.assertIsInstance(d, challenge.basics.Doodad)
+        self.assertRaises(TypeError, setattr, d, "name", "k")
+        self.assertRaises(TypeError, setattr, d, "value", 9)
+
 if __name__ == "__main__":
     unittest.main()

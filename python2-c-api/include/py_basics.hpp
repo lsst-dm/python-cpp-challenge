@@ -12,27 +12,43 @@ public:
 
     static PyObject * to_python(basics::WhatsIt const & it);
 
-    static bool from_python(PyObject * p, void * it);
+    static bool from_python(PyObject * p, basics::WhatsIt * it);
 
 };
 
 template <>
-class Py<basics::Secret const*> {
+class Py<basics::Secret> {
 public:
 
     static PyObject * to_python(basics::Secret const * s);
 
-    static bool from_python(PyObject * p, void const ** s);
+    static bool cptr_from_python(PyObject * p, basics::Secret const ** s);
 
 };
 
 template <>
-class Py<std::shared_ptr<basics::Doodad>> {
+class Py<basics::Doodad> {
 public:
+
+    static PyTypeObject * get_type();
+
+    static bool check(PyObject * p);
+
+    static bool is_frozen(PyObject * p);
 
     static PyObject * to_python(std::shared_ptr<basics::Doodad> s);
 
-    static bool from_python(PyObject * p, void * s);
+    static PyObject * to_python(std::shared_ptr<basics::Doodad const> s);
+
+    static bool sptr_from_python(
+        PyObject * p,
+        std::shared_ptr<basics::Doodad> * s
+    );
+
+    static bool csptr_from_python(
+        PyObject * p,
+        std::shared_ptr<basics::Doodad const> * s
+    );
 
 };
 

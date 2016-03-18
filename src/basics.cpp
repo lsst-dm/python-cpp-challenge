@@ -43,4 +43,9 @@ WhatsIt Doodad::write() const {
     return it;
 }
 
+std::shared_ptr<Doodad const> Doodad::get_const() {
+    static std::shared_ptr<Doodad const> instance(new Doodad("frozen", 50));
+    return instance;
+}
+
 } // namespace basics

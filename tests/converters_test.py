@@ -16,6 +16,14 @@ class SwigTestCase(unittest.TestCase):
         self.assertEqual(r.name, "a")
         self.assertEqual(r.value, 5)
 
+    def test_const_shared_ptr_return(self):
+        """Test that a Swig-built module can return a "shared_ptr<Doodad>".
+        """
+        r = challenge.converters.make_csptr("a", 5)
+        self.assertIsInstance(r, challenge.basics.Doodad)
+        self.assertEqual(r.name, "a")
+        self.assertEqual(r.value, 5)
+
     def test_pass_reference(self):
         """Test that a Swig-built module can accept "Doodad &".
         """
@@ -39,6 +47,19 @@ class SwigTestCase(unittest.TestCase):
         """
         d = challenge.basics.Doodad("e", 9)
         self.assertTrue(challenge.converters.accept_csptr(d, "e", 9))
+
+    def test_const_guarantees(self):
+        """Test that C++ constness restrictions are propagated to Python."""
+        r = challenge.converters.make_csptr("a", 5)
+        self.assertRaises(TypeError, r, setattr, "name", "f")
+        self.assertRaises(TypeError, r, setattr, "value", "100")
+        self.assertTrue(challenge.converters.accept_cref(r, "a", 5))
+        self.assertTrue(challenge.converters.accept_csptr(r, "a", 5))
+        self.assertRaises(TypeError, challenge.converters.accept_sptr,
+                          r, "a", 5)
+        self.assertRaises(TypeError, challenge.converters.accept_ref,
+                          r, "a", 5)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -85,6 +85,9 @@ public:
     // Return the opaque Secret object associated with this Doodad.
     Secret const & get_secret() const { return _secret; }
 
+    // Return a shared_ptr to a Doodad that cannot be modified.
+    static std::shared_ptr<Doodad const> get_const();
+
     // We'd like Python properties to be generated for both of these.
     std::string name;
     int value;

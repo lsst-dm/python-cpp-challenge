@@ -14,8 +14,18 @@
 
 %inline %{
 
-std::shared_ptr<basics::Doodad> make_sptr(std::string const & name, int value) {
+std::shared_ptr<basics::Doodad> make_sptr(
+    std::string const & name, int value
+) {
     return std::shared_ptr<basics::Doodad>(new basics::Doodad(name, value));
+}
+
+std::shared_ptr<basics::Doodad const> make_csptr(
+    std::string const & name, int value
+) {
+    return std::shared_ptr<basics::Doodad const>(
+        new basics::Doodad(name, value)
+    );
 }
 
 bool accept_ref(

@@ -3,32 +3,39 @@
 %}
 
 %typemap(out) std::shared_ptr<basics::Doodad> {
-    $result = Py<std::shared_ptr<basics::Doodad>>::to_python($1);
+    $result = Py<basics::Doodad>::to_python($1);
 }
 
-%typemap(in) basics::Doodad const & (std::shared_ptr<basics::Doodad> tmp) {
-    if (!Py<std::shared_ptr<basics::Doodad>>::from_python($input, &tmp)) {
+%typemap(out) std::shared_ptr<basics::Doodad const> {
+    $result = Py<basics::Doodad>::to_python($1);
+}
+
+%typemap(in) basics::Doodad const &
+    (std::shared_ptr<basics::Doodad const> tmp)
+{
+    if (!Py<basics::Doodad>::csptr_from_python($input, &tmp)) {
         return nullptr;
     }
-    $1 = tmp.get();
+    // const_cast below shouldn't be necessary; it's a Swig weirdness.
+    $1 = const_cast<basics::Doodad*>(tmp.get());
 }
 
 %typemap(in) basics::Doodad & (std::shared_ptr<basics::Doodad> tmp) {
-    if (!Py<std::shared_ptr<basics::Doodad>>::from_python($input, &tmp)) {
+    if (!Py<basics::Doodad>::sptr_from_python($input, &tmp)) {
         return nullptr;
     }
     $1 = tmp.get();
 }
 
 %typemap(in) std::shared_ptr<basics::Doodad> {
-    if (!Py<std::shared_ptr<basics::Doodad>>::from_python($input, &$1)) {
+    if (!Py<basics::Doodad>::sptr_from_python($input, &$1)) {
         return nullptr;
     }
 }
 
 %typemap(in) std::shared_ptr<basics::Doodad const> {
-    std::shared_ptr<basics::Doodad> tmp;
-    if (!Py<std::shared_ptr<basics::Doodad>>::from_python($input, &tmp)) {
+    std::shared_ptr<basics::Doodad const> tmp;
+    if (!Py<basics::Doodad>::csptr_from_python($input, &tmp)) {
         return nullptr;
     }
     $1 = tmp;
