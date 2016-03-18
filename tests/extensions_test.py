@@ -22,8 +22,7 @@ class ThingamajigTestMixin(object):
         self.assertEqual(t.value, 0)
 
     def test_standard_ctor_pos_default(self):
-        """Test standard constructor with positional arguments, using the
-        default for the third.
+        """Test standard constructor with positional arguments, with a default.
         """
         t = challenge.extensions.Thingamajig(self.extra, "b")
         self.assertIsInstance(t, challenge.extensions.Thingamajig)
@@ -42,8 +41,7 @@ class ThingamajigTestMixin(object):
         self.assertEqual(t.value, 2)
 
     def test_standard_ctor_kwarg_default(self):
-        """Test standard constructor with keyword arguments, using the
-        default for the third.
+        """Test standard constructor with keyword arguments, with a default.
         """
         t = challenge.extensions.Thingamajig(name="d", extra=self.extra)
         self.assertIsInstance(t, challenge.extensions.Thingamajig)
@@ -52,8 +50,7 @@ class ThingamajigTestMixin(object):
         self.assertEqual(t.value, 1)
 
     def test_standard_ctor_mixed(self):
-        """Test standard constructor with a combination of positional and
-        keyword arguments.
+        """Test standard constructor with a mix of positional and keyword args.
         """
         t = challenge.extensions.Thingamajig(self.extra, name="e", value=3)
         self.assertIsInstance(t, challenge.extensions.Thingamajig)
@@ -62,8 +59,7 @@ class ThingamajigTestMixin(object):
         self.assertEqual(t.value, 3)
 
     def test_clone(self):
-        """Test calling the clone() method, including checking for unnecessary
-        copies and downcasting.
+        """Test calling the clone() method, including downcasting.
         """
         t1 = challenge.extensions.Thingamajig(self.extra, "g", 5)
         t2 = t1.clone()

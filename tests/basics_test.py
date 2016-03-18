@@ -20,8 +20,7 @@ class DoodadTestCase(unittest.TestCase):
         self.assertEqual(d.value, 0)
 
     def test_standard_ctor_pos_default(self):
-        """Test standard constructor with positional arguments, using the
-        default for the second.
+        """Test standard constructor with positional arguments, with a default.
         """
         d = challenge.basics.Doodad("b")
         self.assertIsInstance(d, challenge.basics.Doodad)
@@ -37,8 +36,7 @@ class DoodadTestCase(unittest.TestCase):
         self.assertEqual(d.value, 2)
 
     def test_standard_ctor_kwarg_default(self):
-        """Test standard constructor with keyword arguments, using the
-        default for the second.
+        """Test standard constructor with kwargs and a default value.
         """
         d = challenge.basics.Doodad(name="d")
         self.assertIsInstance(d, challenge.basics.Doodad)
@@ -64,8 +62,7 @@ class DoodadTestCase(unittest.TestCase):
         self.assertEqual(d.value, 4)
 
     def test_clone(self):
-        """Test calling the clone() method, including checking for unnecessary
-        copies.
+        """Test calling the clone() method.
         """
         d1 = challenge.basics.Doodad("g", 5)
         d2 = d1.clone()
