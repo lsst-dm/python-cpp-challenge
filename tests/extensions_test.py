@@ -1,15 +1,9 @@
 #!/usr/bin/env python
 
 import unittest
-import sys
 
-# Defer import errors to test errors, to avoid short-circuiting other tests
-try:
-    import challenge.basics
-    import challenge.extensions
-except ImportError:
-    pass
-
+import challenge.basics
+import challenge.extensions
 
 class ThingamajigTestMixin(object):
     """Base class for all Thingamajig TestCases.

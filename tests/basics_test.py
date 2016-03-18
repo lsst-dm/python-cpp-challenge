@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
-
-# Defer import errors to test errors, to avoid short-circuiting other tests
-try:
-    import challenge.basics
-except ImportError:
-    pass
+import challenge.basics
 
 class DoodadTestCase(unittest.TestCase):
     """Test case for for Doodad bindings.
