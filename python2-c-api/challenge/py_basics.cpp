@@ -1,14 +1,12 @@
 #include "py_basics.hpp"
 
-using basics::WhatsIt;
-using basics::Secret;
-using basics::Doodad;
+namespace basics {
 
 // ----------------------------------------------------------------------------
 // WhatsIt
 // ----------------------------------------------------------------------------
 
-PyObject * Py<WhatsIt>::to_python(WhatsIt const & it) {
+PyObject * PyWhatsIt::to_python(WhatsIt const & it) {
     return Py_BuildValue(
         "s#i",
         it.a.data(), static_cast<int>(it.a.size()),
@@ -16,7 +14,7 @@ PyObject * Py<WhatsIt>::to_python(WhatsIt const & it) {
     );
 }
 
-bool Py<WhatsIt>::from_python(PyObject * p, WhatsIt * it) {
+bool PyWhatsIt::from_python(PyObject * p, WhatsIt * it) {
     WhatsIt * result = reinterpret_cast<WhatsIt*>(it);
     int size = 0;
     int b = 0;
@@ -33,7 +31,7 @@ bool Py<WhatsIt>::from_python(PyObject * p, WhatsIt * it) {
 // Secret
 // ----------------------------------------------------------------------------
 
-PyObject * Py<Secret>::to_python(Secret const * s) {
+PyObject * PySecret::to_python(Secret const * s) {
     return PyCapsule_New(
         const_cast<Secret*>(s),
         "challenge.basics.Secret",
@@ -41,7 +39,7 @@ PyObject * Py<Secret>::to_python(Secret const * s) {
     );
 }
 
-bool Py<Secret>::cptr_from_python(PyObject * p, Secret const ** s) {
+bool PySecret::cptr_from_python(PyObject * p, Secret const ** s) {
     void * v = PyCapsule_GetPointer(p, "challenge.basics.Secret");
     if (!v) {
         return false;
@@ -56,8 +54,8 @@ static PyObject * Py_compare(PyObject * self, PyObject * args) {
     if (
         !PyArg_ParseTuple(
             args, "O&O&",
-            &Py<Secret>::cptr_from_python, &a,
-            &Py<Secret>::cptr_from_python, &b
+            &PySecret::cptr_from_python, &a,
+            &PySecret::cptr_from_python, &b
         )
     ) {
         return nullptr;
@@ -72,8 +70,8 @@ static PyObject * Py_adjacent(PyObject * self, PyObject * args) {
     if (
         !PyArg_ParseTuple(
             args, "O&O&",
-            &Py<Secret>::cptr_from_python, &a,
-            &Py<Secret>::cptr_from_python, &b
+            &PySecret::cptr_from_python, &a,
+            &PySecret::cptr_from_python, &b
         )
     ) {
         return nullptr;
@@ -85,12 +83,6 @@ static PyObject * Py_adjacent(PyObject * self, PyObject * args) {
 // ----------------------------------------------------------------------------
 // Doodad
 // ----------------------------------------------------------------------------
-
-struct PyDoodad {
-    PyObject_HEAD
-    bool frozen;
-    std::shared_ptr<Doodad> instance;
-};
 
 static void PyDoodad_dealloc(PyDoodad * self) {
     typedef std::shared_ptr<Doodad> Holder;
@@ -133,7 +125,7 @@ static bool PyDoodad_init_2(PyDoodad * self, PyObject * args, PyObject * kwds) {
     if (
         PyArg_ParseTuple(
             args, "O&",
-            &Py<WhatsIt>::from_python, &it
+            &PyWhatsIt::from_python, &it
         )
     ) {
         self->instance = std::shared_ptr<Doodad>(new Doodad(it));
@@ -159,7 +151,7 @@ static PyObject * PyDoodad_clone(PyDoodad * self, PyObject *) {
         return nullptr;
     }
     std::shared_ptr<Doodad> copy(self->instance->clone());
-    return Py<Doodad>::to_python(std::move(copy));
+    return PyDoodad::to_python(std::move(copy));
 }
 
 static PyObject * PyDoodad_read(PyDoodad * self, PyObject * a) {
@@ -172,7 +164,7 @@ static PyObject * PyDoodad_read(PyDoodad * self, PyObject * a) {
         return nullptr;
     }
     WhatsIt it;
-    if (!Py<WhatsIt>::from_python(a, &it)) {
+    if (!PyWhatsIt::from_python(a, &it)) {
         return nullptr;
     }
     self->instance->read(it);
@@ -184,7 +176,7 @@ static PyObject * PyDoodad_write(PyDoodad * self, PyObject *) {
         PyErr_SetString(PyExc_TypeError, "Uninitialized Doodad");
         return nullptr;
     }
-    return Py<WhatsIt>::to_python(self->instance->write());
+    return PyWhatsIt::to_python(self->instance->write());
 }
 
 static PyObject * PyDoodad_get_secret(PyDoodad * self, PyObject *) {
@@ -192,11 +184,11 @@ static PyObject * PyDoodad_get_secret(PyDoodad * self, PyObject *) {
         PyErr_SetString(PyExc_TypeError, "Uninitialized Doodad");
         return nullptr;
     }
-    return Py<Secret>::to_python(&self->instance->get_secret());
+    return PySecret::to_python(&self->instance->get_secret());
 }
 
 static PyObject * PyDoodad_get_const(PyObject *, PyObject *) {
-    return Py<Doodad>::to_python(Doodad::get_const());
+    return PyDoodad::to_python(Doodad::get_const());
 }
 
 static PyMethodDef PyDoodad_methods[] = {
@@ -277,7 +269,7 @@ struct PyGetSetDef PyDoodad_getset[] = {
     }
 };
 
-PyTypeObject * Py<Doodad>::get_type() {
+PyTypeObject * PyDoodad::get_type() {
     static PyTypeObject t = {
         PyObject_HEAD_INIT(NULL)
         0,                         /*ob_size*/
@@ -322,10 +314,10 @@ PyTypeObject * Py<Doodad>::get_type() {
     return &t;
 }
 
-bool Py<Doodad>::check(PyObject * p) {
+bool PyDoodad::check(PyObject * p) {
     int r = PyObject_IsSubclass(
         (PyObject*)p->ob_type,
-        (PyObject*)Py<Doodad>::get_type()
+        (PyObject*)PyDoodad::get_type()
     );
     if (r < 0) {
         PyErr_Clear();
@@ -334,21 +326,18 @@ bool Py<Doodad>::check(PyObject * p) {
     return r;
 }
 
-bool is_frozen(PyObject * p) {
-    PyDoodad * d = reinterpret_cast<PyDoodad *>(p);
-    return d->frozen;
-}
-
-PyObject * Py<Doodad>::to_python(std::shared_ptr<Doodad> s) {
-    PyDoodad * result = PyDoodad_new(Py<Doodad>::get_type(), nullptr, nullptr);
+PyObject * PyDoodad::to_python(std::shared_ptr<Doodad> s) {
+    // TODO
+    PyDoodad * result = PyDoodad_new(PyDoodad::get_type(), nullptr, nullptr);
     if (result) {
         result->instance = std::move(s);
     }
     return (PyObject*)result;
 }
 
-PyObject * Py<Doodad>::to_python(std::shared_ptr<Doodad const> s) {
-    PyDoodad * result = PyDoodad_new(Py<Doodad>::get_type(), nullptr, nullptr);
+PyObject * PyDoodad::to_python(std::shared_ptr<Doodad const> s) {
+    // TODO
+    PyDoodad * result = PyDoodad_new(PyDoodad::get_type(), nullptr, nullptr);
     if (result) {
         result->instance = std::const_pointer_cast<Doodad>(std::move(s));
         result->frozen = true;
@@ -356,7 +345,7 @@ PyObject * Py<Doodad>::to_python(std::shared_ptr<Doodad const> s) {
     return (PyObject*)result;
 }
 
-bool Py<Doodad>::sptr_from_python(PyObject * p, std::shared_ptr<Doodad> * s) {
+bool PyDoodad::sptr_from_python(PyObject * p, std::shared_ptr<Doodad> * s) {
     if (check(p)) {
         PyDoodad * d = reinterpret_cast<PyDoodad*>(p);
         *reinterpret_cast<std::shared_ptr<Doodad>*>(s) = d->instance;
@@ -370,7 +359,7 @@ bool Py<Doodad>::sptr_from_python(PyObject * p, std::shared_ptr<Doodad> * s) {
     return false;
 }
 
-bool Py<Doodad>::csptr_from_python(
+bool PyDoodad::csptr_from_python(
     PyObject * p, std::shared_ptr<Doodad const> * s
 ) {
     if (check(p)) {
@@ -382,14 +371,16 @@ bool Py<Doodad>::csptr_from_python(
     return false;
 }
 
+} // namespace basics
+
 // ----------------------------------------------------------------------------
 // Module Bindings
 // ----------------------------------------------------------------------------
 
 static PyMethodDef methods[] = {
-    {"compare", &Py_compare, METH_VARARGS,
+    {"compare", &basics::Py_compare, METH_VARARGS,
      "Return true if two Secrets are the same."},
-    {"adjacent", &Py_adjacent, METH_VARARGS,
+    {"adjacent", &basics::Py_adjacent, METH_VARARGS,
      "Return true if two Secrets were constructed consecutively."},
     {nullptr}
 };
@@ -401,7 +392,7 @@ extern "C" {
 #endif
 PyMODINIT_FUNC
 initbasics(void) {
-    if (PyType_Ready(Py<Doodad>::get_type()) < 0) return;
+    if (PyType_Ready(basics::PyDoodad::get_type()) < 0) return;
 
     PyObject* m = Py_InitModule3(
         "basics", methods,
@@ -410,8 +401,8 @@ initbasics(void) {
 
     if (!m) return;
 
-    Py_INCREF(Py<Doodad>::get_type());
-    PyModule_AddObject(m, "Doodad", (PyObject*)Py<Doodad>::get_type());
+    Py_INCREF(basics::PyDoodad::get_type());
+    PyModule_AddObject(m, "Doodad", (PyObject*)basics::PyDoodad::get_type());
 }
 
 } // extern "C"
