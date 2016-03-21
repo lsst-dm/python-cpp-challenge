@@ -5,17 +5,16 @@
 
 namespace extensions {
 
-// In Python, we'd ideally like to wrap this as a single Thingamajig type with
+// In Python, we'd like to wrap this as a single Thingamajig type with
 // a "dtype" attribute and constructor argument that can be either of
-// (std::complex<double>, Doodad).
-// But since that's hard, we recommend starting with just support for
-// std::complex<double>, which should be sufficient to pass many tests.
+// (double, std::shared_ptr<Doodad>), mimicking the way numpy.ndarray
+// handles multiple types.  Actually using NumPy is optional.
 template <typename T>
 class Thingamajig : public basics::Doodad {
 public:
 
     // Keyword arguments and default values should work in Python.
-    Thingamajig(T extra, std::string const & name, double value=1);
+    Thingamajig(T extra, std::string const & name, int value=1);
 
     // Copy construction is disabled to ensure bindings don't make unnecessary
     // copies.
@@ -27,17 +26,15 @@ public:
     Thingamajig(Thingamajig &&) = default;
     Thingamajig& operator=(Thingamajig &&) = default;
 
-    // In Python, this should ideally return a Thingamajig instance, not just
-    // a Doodad.
+    // In Python, this shouldn't have to be wrapped for Thingamajig, as
+    // Python inheritance from Doodad should delegate to the Thingamajig
+    // implementation anyway.  It should, however, return a Thingamajig
+    // instance in Python, not a Doodad that would have to be casted
+    // somehow.
     virtual std::unique_ptr<basics::Doodad> clone() const;
 
-    // When T is complex<float> these will always return a copy, since they'll
-    // be returning a Python built-in.  When returning a Doodad, we'd ideally
-    // like to propagate constness, and tie the lifetime of the Doodad to the
-    // lifetime of the Thingamajig, so it's impossible to get a dangling
-    // reference in Python.
-    T const & get_extra() const { return _extra; }
-    T & get_extra() { return _extra; }
+    // Return the extra object.
+    T get_extra() const { return _extra; }
 
 private:
     T _extra;
