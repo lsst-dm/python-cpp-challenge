@@ -327,8 +327,8 @@ bool PyDoodad::check(PyObject * p) {
 }
 
 PyObject * PyDoodad::to_python(std::shared_ptr<Doodad> s) {
-    // TODO
-    PyDoodad * result = PyDoodad_new(PyDoodad::get_type(), nullptr, nullptr);
+    PyTypeObject * type = get_tree()->find(s.get());
+    PyDoodad * result = PyDoodad_new(type, nullptr, nullptr);
     if (result) {
         result->instance = std::move(s);
     }
@@ -336,8 +336,8 @@ PyObject * PyDoodad::to_python(std::shared_ptr<Doodad> s) {
 }
 
 PyObject * PyDoodad::to_python(std::shared_ptr<Doodad const> s) {
-    // TODO
-    PyDoodad * result = PyDoodad_new(PyDoodad::get_type(), nullptr, nullptr);
+    PyTypeObject * type = get_tree()->find(s.get());
+    PyDoodad * result = PyDoodad_new(type, nullptr, nullptr);
     if (result) {
         result->instance = std::const_pointer_cast<Doodad>(std::move(s));
         result->frozen = true;
@@ -369,6 +369,12 @@ bool PyDoodad::csptr_from_python(
     }
     PyErr_SetString(PyExc_TypeError, "Could not convert object to Doodad.");
     return false;
+}
+
+utilities::InheritanceTree * PyDoodad::get_tree() {
+    static std::unique_ptr<utilities::InheritanceTree> tree =
+        utilities::InheritanceTree::make_root<Doodad>(get_type());
+    return tree.get();
 }
 
 } // namespace basics

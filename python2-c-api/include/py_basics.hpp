@@ -1,7 +1,7 @@
 #ifndef CHALLENGE_py_basics_hpp_INCLUDED
 #define CHALLENGE_py_basics_hpp_INCLUDED
 
-#include "Python.h"
+#include "utilities.hpp"
 #include "basics.hpp"
 
 namespace basics {
@@ -63,9 +63,19 @@ struct PyDoodad {
         std::shared_ptr<Doodad const> * s
     );
 
+    static utilities::InheritanceTree * get_tree();
+
+    template <typename T>
+    static utilities::InheritanceTree * register_subclass(
+        PyTypeObject * type
+    ) {
+        return get_tree()->register_subclass<T,Doodad>(type);
+    }
+
     PyObject_HEAD
     bool frozen;
     std::shared_ptr<Doodad> instance;
+
 };
 
 } // namespace basics
