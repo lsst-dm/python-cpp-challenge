@@ -30,29 +30,25 @@ public:
     iterator begin() const { return _items.begin(); }
     iterator end() const { return _items.end(); }
 
-    // In Python, this should return as a list that contains the original items.
-    std::vector<std::shared_ptr<Item>> get_items() const { return _items; }
+    // In Python, this should return as a new list that contains the original
+    // items, and should be renamed to "as_list()"".
+    std::vector<std::shared_ptr<Item>> as_vector() const { return _items; }
 
     // In Python, this should accept any Python sequence.
-    void set_items(std::vector<std::shared_ptr<Item>> const & items) {
+    void assign(std::vector<std::shared_ptr<Item>> const & items) {
         _items = items;
     }
 
     // This should accept any Python Doodad, including Thingamajigs.
-    void add_item(std::shared_ptr<Item> item);
+    void add(std::shared_ptr<Item> item);
 
     // This should accept a (str, int) tuple (or other sequence).
     // There should be a single add_item Python method that accepts both
     // Doodads and tuples.
-    void add_item(basics::WhatsIt const & it);
+    void add(basics::WhatsIt const & it);
 
-    // Ideally, if the returned object is actually a Thingamajig, it should
-    // be returned as one.
-    std::shared_ptr<Item> get_item(std::size_t index) const {
-        return _items[index];
-    }
-
-    // This should be transformed into a Python dict on return.
+    // This should be transformed into a Python dict on return, and renamed
+    // to "as_dict()".
     std::map<std::string,std::shared_ptr<Item>> as_map() const;
 
 private:
