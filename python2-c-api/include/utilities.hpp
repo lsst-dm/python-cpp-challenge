@@ -72,6 +72,29 @@ inline InheritanceTree * InheritanceTree::register_subclass(
 }
 
 
+template <typename Base>
+struct Py {
+    PyObject_HEAD
+    bool frozen;
+    std::shared_ptr<Base> instance;
+
+    static Py * create(PyTypeObject * type) {
+        Py * self = (Py*)type->tp_alloc(type, 0);
+        self->frozen = false;
+        if (self) {
+            new (&self->instance) std::shared_ptr<Base>();
+        }
+        return self;
+    }
+
+    static void destroy(Py * self) {
+        typedef std::shared_ptr<Base> Holder;
+        self->instance.~Holder();
+        self->ob_type->tp_free((PyObject*)self);
+    }
+
+};
+
 } // utilities
 
 #endif // !CHALLENGE_utilities_hpp_INCLUDED

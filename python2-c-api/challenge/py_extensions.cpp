@@ -2,6 +2,13 @@
 
 using basics::Doodad;
 using basics::PyDoodad;
+using utilities::Py;
+
+namespace utilities {
+
+extern template class Py<Doodad>;
+
+} // namespace utilities
 
 namespace extensions {
 
@@ -10,7 +17,7 @@ namespace extensions {
 // ----------------------------------------------------------------------------
 
 static int PyThingamajig_init(
-    PyDoodad * self, PyObject * args, PyObject * kwds
+    Py<Doodad> * self, PyObject * args, PyObject * kwds
 ) {
     static char const * kwd_names[] = {
         "extra", "name", "value", "dtype", nullptr
@@ -68,7 +75,7 @@ static int PyThingamajig_init(
     return -1;
 }
 
-static PyObject * PyThingamajig_get_extra(PyDoodad * self, PyObject *) {
+static PyObject * PyThingamajig_get_extra(Py<Doodad> * self, PyObject *) {
     typedef Thingamajig<std::shared_ptr<Doodad>> T1;
     typedef Thingamajig<double> T2;
     if (auto t = std::dynamic_pointer_cast<T1>(self->instance)) {
@@ -87,7 +94,7 @@ static PyMethodDef PyThingamajig_methods[] = {
     {nullptr}
 };
 
-static PyObject * PyThingamajig_get_dtype(PyDoodad * self, void *) {
+static PyObject * PyThingamajig_get_dtype(Py<Doodad> * self, void *) {
     typedef Thingamajig<std::shared_ptr<Doodad>> T1;
     typedef Thingamajig<double> T2;
     PyObject * result = nullptr;

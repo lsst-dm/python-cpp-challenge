@@ -72,10 +72,6 @@ struct PyDoodad {
         return get_tree()->register_subclass<T,Doodad>(type);
     }
 
-    PyObject_HEAD
-    bool frozen;
-    std::shared_ptr<Doodad> instance;
-
 };
 
 } // namespace basics

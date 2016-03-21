@@ -11,6 +11,8 @@ This solution to the challenge is currently incomplete, and what's present has a
 
 - Bindings for basics::Doodad::get_secret are not sufficiently careful about memory.  The returned Secret object does not hold a reference to the Doodad that owns it, making it possible for the latter to be destroyed first, causing the Secret to dangle.  This could be fixed by defining a new Python type for Secret instead of using Capsules, which is just a bit more work (and demonstrating Capsule is also useful, even if it isn't a perfect fit).
 
+- The way C++ objects (namely Doodads) are held in Python instances may not be strictly legal - we put a std::shared_ptr in a C struct that must start with the same layout as PyObject.  std::shared_ptr isn't guaranteed to be Standard Layout, so I think it formally breaks that guarantee.  But I believe this works with all existing C++ ABIs.
+
 - The C API provided for downstream use by Swig typemaps requires setting RTLD flags, which is messy and not completely portable.  AFAIK, it is also required for any use of Swig, but we could have written a C API using the macro-heavy approach Capsule approach advocated in the Python docs, which would have made downstream use by something other than Swig not rely on that approach to linking.
 
 This approach also obviously requires more code than most people would want to write for anything but the simplest C++ libraries.  It produces a polished, complete Python interface, and there's little guesswork as the Python C API is very well documented, but there are very clear tradeoffs in readibility and sheer quantity of code for the bindings developer.
