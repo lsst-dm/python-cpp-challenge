@@ -15,7 +15,8 @@ class ThingamajigTestMixin(object):
     def test_standard_ctor_pos_all(self):
         """Test standard constructor with all positional arguments.
         """
-        t = challenge.extensions.Thingamajig(self.extra, "b", 0, dtype=complex)
+        t = challenge.extensions.Thingamajig(self.extra, "b", 0,
+                                             dtype=self.dtype)
         self.assertIsInstance(t, challenge.extensions.Thingamajig)
         self.assertEqual(t.get_extra(), self.extra)
         self.assertEqual(t.name, "b")
@@ -72,25 +73,26 @@ class ThingamajigTestMixin(object):
         )
 
 
-class ComplexThingamajigTestCase(ThingamajigTestMixin, unittest.TestCase):
-    """Test case for for Thingamajig<std::complex<float>> bindings.
+class FloatThingamajigTestCase(ThingamajigTestMixin, unittest.TestCase):
+    """Test case for for Thingamajig<double> bindings.
 
     All tests also require Doodad to be fully wrapped, and most require the
     standard constructor to be wrapped to support at least positional arguments.
     """
 
     def setUp(self):
-        self.extra = -4j
+        self.extra = 0.5
+        self.dtype = float
 
     def test_types(self):
         """Test the inheritance relationships and dtype status of Thingamajig.
         """
-        t = challenge.extensions.Thingamajig(-1j, "a", 0, dtype=complex)
+        t = challenge.extensions.Thingamajig(-0.5, "a", 0, dtype=self.dtype)
         self.assertIsInstance(t, challenge.basics.Doodad)
         self.assertIsInstance(t, challenge.extensions.Thingamajig)
-        # Since "numpy.dtype(complex) == complex", we're not requiring
-        # the more restrictive "t.dtype is complex".
-        self.assertEqual(t.dtype, complex)
+        # Since "numpy.dtype(float) == float", we're not requiring
+        # the more restrictive "t.dtype is float".
+        self.assertEqual(t.dtype, float)
 
 
 class DoodadThingamajigTestCase(ThingamajigTestMixin, unittest.TestCase):
@@ -113,13 +115,14 @@ class DoodadThingamajigTestCase(ThingamajigTestMixin, unittest.TestCase):
 
     def setUp(self):
         self.extra = challenge.basics.Doodad("asdf", 120)
+        self.dtype = challenge.basics.Doodad
 
     def test_types(self):
         """Test the inheritance relationships and dtype status of Thingamajig.
         """
         t = challenge.extensions.Thingamajig(
             self.extra, "a", 0,
-            dtype=challenge.basics.Doodad
+            dtype=self.dtype
         )
         self.assertIsInstance(t, challenge.basics.Doodad)
         self.assertIsInstance(t, challenge.extensions.Thingamajig)
