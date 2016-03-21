@@ -327,6 +327,9 @@ bool PyDoodad::check(PyObject * p) {
 }
 
 PyObject * PyDoodad::to_python(std::shared_ptr<Doodad> s) {
+    if (!s) {
+        Py_RETURN_NONE;
+    }
     PyTypeObject * type = get_tree()->find(s.get());
     Py<Doodad> * result = PyDoodad_new(type, nullptr, nullptr);
     if (result) {
@@ -336,6 +339,9 @@ PyObject * PyDoodad::to_python(std::shared_ptr<Doodad> s) {
 }
 
 PyObject * PyDoodad::to_python(std::shared_ptr<Doodad const> s) {
+    if (!s) {
+        Py_RETURN_NONE;
+    }
     PyTypeObject * type = get_tree()->find(s.get());
     Py<Doodad> * result = PyDoodad_new(type, nullptr, nullptr);
     if (result) {
@@ -355,6 +361,10 @@ bool PyDoodad::sptr_from_python(PyObject * p, std::shared_ptr<Doodad> * s) {
         }
         return true;
     }
+    if (p == Py_None) {
+        s->reset();
+        return true;
+    }
     PyErr_SetString(PyExc_TypeError, "Could not convert object to Doodad.");
     return false;
 }
@@ -365,6 +375,10 @@ bool PyDoodad::csptr_from_python(
     if (check(p)) {
         Py<Doodad> * d = reinterpret_cast<Py<Doodad>*>(p);
         *reinterpret_cast<std::shared_ptr<Doodad>*>(s) = d->instance;
+        return true;
+    }
+    if (p == Py_None) {
+        s->reset();
         return true;
     }
     PyErr_SetString(PyExc_TypeError, "Could not convert object to Doodad.");
