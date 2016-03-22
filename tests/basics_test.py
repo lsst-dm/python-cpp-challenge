@@ -94,5 +94,13 @@ class DoodadTestCase(unittest.TestCase):
         self.assertRaises(TypeError, setattr, d, "name", "k")
         self.assertRaises(TypeError, setattr, d, "value", 9)
 
+    def test_equality(self):
+        """Test that equality comparison works at the C++ pointer level.
+        """
+        d1 = challenge.basics.Doodad.get_const()
+        d2 = challenge.basics.Doodad.get_const()
+        self.assertEqual(d1, d2)
+        self.assertNotEqual(d1, challenge.basics.Doodad(d1.name, d1.value))
+
 if __name__ == "__main__":
     unittest.main()

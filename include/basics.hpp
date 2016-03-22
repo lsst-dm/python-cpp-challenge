@@ -45,6 +45,8 @@ bool adjacent(Secret const & a, Secret const & b);
 // This should be wrapped as a standard Python type.
 // It should have an overloaded constructor, taking WhatsIt (tuple/sequence
 // in Python) or str and optionally int.
+// We should also define Python comparison (equality and inequality) operators
+// that compare by *pointer*, not value.  This will be used by some tests.
 // Doodad is noncopyable but moveable; this allows us to guarantee that the
 // binding layer isn't doing any unnecessary copies.  We do not expect Python
 // bindings to provide access to the move construction or assignment, as there

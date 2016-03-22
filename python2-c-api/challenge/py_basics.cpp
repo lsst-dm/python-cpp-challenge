@@ -269,6 +269,30 @@ struct PyGetSetDef PyDoodad_getset[] = {
     }
 };
 
+PyObject * PyDoodad_richcompare(PyObject * a, PyObject * b, int op) {
+    std::shared_ptr<Doodad const> ca;
+    std::shared_ptr<Doodad const> cb;
+    if (!PyDoodad::csptr_from_python(a, &ca)) {
+        PyErr_Clear();
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    }
+    if (!PyDoodad::csptr_from_python(b, &cb)) {
+        PyErr_Clear();
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    }
+    switch (op) {
+    case Py_EQ:
+        return PyBool_FromLong(ca == cb);
+    case Py_NE:
+        return PyBool_FromLong(ca != cb);
+    default:
+        PyErr_SetString(PyExc_TypeError, "Comparison not supported.");
+        return nullptr;
+    }
+}
+
 PyTypeObject * PyDoodad::get_type() {
     static PyTypeObject t = {
         PyObject_HEAD_INIT(NULL)
@@ -295,7 +319,7 @@ PyTypeObject * PyDoodad::get_type() {
         "Doodad",                  /* tp_doc */
         0,                         /* tp_traverse */
         0,                         /* tp_clear */
-        0,                         /* tp_richcompare */
+        PyDoodad_richcompare,      /* tp_richcompare */
         0,                         /* tp_weaklistoffset */
         0,                         /* tp_iter */
         0,                         /* tp_iternext */
