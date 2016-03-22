@@ -166,7 +166,7 @@ static PyMethodDef PyDoodadSet_methods[] = {
      "Copy an arbitrary iterable into the DoodadSet."},
     {"add", (PyCFunction)&PyDoodadSet_add, METH_O,
      "Add an item to the DoodadSet."},
-    {"as_dict", (PyCFunction)&PyDoodadSet_as_list, METH_NOARGS,
+    {"as_dict", (PyCFunction)&PyDoodadSet_as_dict, METH_NOARGS,
      "Return a copy of the DoodadSet as a {str: Doodad} dict."},
     {nullptr}
 };
@@ -313,7 +313,19 @@ extern "C" {
 #endif
 PyMODINIT_FUNC
 initcontainers(void) {
+    PyObject * basics_module = PyImport_ImportModule("challenge.basics");
+    if (!basics_module) return;
+
     if (PyType_Ready(containers::PyDoodadSet::get_type()) < 0) return;
+
+    Py_INCREF((PyObject*)basics::PyDoodad::get_type());
+    if (
+        PyDict_SetItemString(
+            containers::PyDoodadSet::get_type()->tp_dict,
+            "Item",
+            (PyObject*)basics::PyDoodad::get_type()
+        ) < 0
+    ) return;
 
     PyObject* m = Py_InitModule3(
         "containers", methods,
