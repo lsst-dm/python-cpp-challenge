@@ -95,6 +95,74 @@ struct Py {
 
 };
 
+
+class IteratorHolder {
+public:
+
+    template <typename Converter, typename Iterator>
+    static std::unique_ptr<IteratorHolder> create(
+        Converter converter, Iterator begin, Iterator end
+    );
+
+    virtual PyObject * next() = 0;
+
+    virtual ~IteratorHolder() {}
+
+protected:
+    template <typename Converter, typename Iterator> class Impl;
+};
+
+
+template <typename Converter, typename Iterator>
+class IteratorHolder::Impl : public IteratorHolder {
+public:
+
+    Impl(Converter converter, Iterator begin, Iterator end) :
+        _converter(std::move(converter)),
+        _current(std::move(begin)),
+        _end(std::move(end))
+    {}
+
+    virtual PyObject * next() {
+        if (_current == _end) {
+            return nullptr;
+        }
+        PyObject * r = _converter(*_current);
+        ++_current;
+        return r;
+    }
+
+private:
+    Converter _converter;
+    Iterator _current;
+    Iterator const _end;
+};
+
+
+template <typename Converter, typename Iterator>
+inline std::unique_ptr<IteratorHolder> IteratorHolder::create(
+    Converter converter, Iterator begin, Iterator end
+) {
+    return std::unique_ptr<IteratorHolder>(
+        new Impl<Converter,Iterator>(
+            std::move(converter), std::move(begin), std::move(end)
+        )
+    );
+}
+
+PyObject * wrapIterator(
+    PyObject * owner,
+    std::unique_ptr<IteratorHolder> holder
+);
+
+template <typename Converter, typename Iterator>
+PyObject * wrapIterator(
+    PyObject * owner, Converter converter,
+    Iterator begin, Iterator end
+) {
+    return wrapIterator(owner, IteratorHolder::create(converter, begin, end));
+}
+
 } // utilities
 
 #endif // !CHALLENGE_utilities_hpp_INCLUDED

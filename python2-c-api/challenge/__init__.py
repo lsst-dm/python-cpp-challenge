@@ -11,6 +11,7 @@ except ImportError:
     flags |= 0x2  # works for Linux and Mac, only platforms I care about now.
 sys.setdlopenflags(flags)
 
-# Ensure basics module is loaded first, since we need its symbols for anything
-# else.
+# Ensure basics and utilities modules are loaded first, since we need its
+# symbols for anything else.
+from . import utilities
 from . import basics

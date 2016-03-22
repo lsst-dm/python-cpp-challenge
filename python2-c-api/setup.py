@@ -8,6 +8,18 @@ for key, value in cfg_vars.items():
     if type(value) == str:
         cfg_vars[key] = value.replace("-Wstrict-prototypes", "")
 
+utilities_module = Extension(
+    'challenge.utilities',
+    sources=[
+        os.path.join('challenge', 'utilities.cpp'),
+    ],
+    include_dirs=[
+        os.path.join('..', 'include'),
+        os.path.join('include')
+    ],
+    extra_compile_args=['-O0', '-std=c++11']
+)
+
 basics_module = Extension(
     'challenge.basics',
     sources=[
@@ -67,6 +79,6 @@ setup(
     version='1.0',
     test_suite = 'tests',
     description='C++/Python bindings challenge with raw Python C API',
-    ext_modules=[basics_module, containers_module, extensions_module,
-                 converters_module],
+    ext_modules=[utilities_module, basics_module, containers_module,
+                 extensions_module, converters_module],
 )

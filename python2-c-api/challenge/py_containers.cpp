@@ -171,6 +171,15 @@ static PyMethodDef PyDoodadSet_methods[] = {
     {nullptr}
 };
 
+PyObject * PyDoodadSet_iter(Py<DoodadSet> * self) {
+    typedef PyObject * (*Converter)(std::shared_ptr<Doodad>);
+    Converter converter = &PyDoodad::to_python;
+    return utilities::wrapIterator(
+        (PyObject*)self, converter,
+        self->instance->begin(), self->instance->end()
+    );
+}
+
 PyTypeObject * PyDoodadSet::get_type() {
     static PyTypeObject t = {
         PyObject_HEAD_INIT(NULL)
@@ -199,7 +208,7 @@ PyTypeObject * PyDoodadSet::get_type() {
         0,                         /* tp_clear */
         0,                         /* tp_richcompare */
         0,                         /* tp_weaklistoffset */
-        0,                         /* tp_iter */
+        (getiterfunc)PyDoodadSet_iter,  /* tp_iter */
         0,                         /* tp_iternext */
         PyDoodadSet_methods,       /* tp_methods */
         0,                         /* tp_members */
