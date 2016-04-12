@@ -44,6 +44,15 @@ ext_modules = [
 	extra_compile_args = cpp_args,
 #	extra_link_args = ['-v'],
     ),
+    Extension(
+        'challenge.converters',
+        ['challenge/converters.i'],
+        include_dirs=['pybind11/include', 'include', 'challenge/include'],
+        swig_opts=["-modern", "-c++", "-Ichallenge/include", "-noproxy"],
+        library_dirs=['.'],
+        libraries=['basics'],
+        extra_compile_args=cpp_args,
+    ),
 ]
 
 setup(
