@@ -28,7 +28,7 @@ PYBIND11_PLUGIN(basics) {
         .def_static("get_const", &basics::Doodad::get_const) // does not preserve const :(
 
         // no mapping for unique_ptr but shared_ptr<Doodad> maps to Python Doodad directly
-        .def("clone", [](const basics::Doodad &d) { return std::shared_ptr<basics::Doodad>(d.clone().release()); })
+        .def("clone", [](const basics::Doodad &d) { return std::shared_ptr<basics::Doodad>(d.clone()); })
         .def("get_secret", &basics::Doodad::get_secret, py::return_value_policy::reference_internal)
         .def("write", [](const basics::Doodad &d) { auto tmp = d.write(); return make_pair(tmp.a, tmp.b); })
         .def("read", [](basics::Doodad &d, std::pair<std::string, int> p) { d.read(basics::WhatsIt{p.first, p.second}) ; });
