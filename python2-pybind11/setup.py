@@ -32,7 +32,6 @@ ext_modules = [
         library_dirs=['.'],
         libraries=['basics'],
 	extra_compile_args = cpp_args,
-#	extra_link_args = ['-v'],
     ),
     Extension(
         'challenge.containers',
@@ -42,7 +41,6 @@ ext_modules = [
         library_dirs=['.'],
         libraries=['basics','containers'],
 	extra_compile_args = cpp_args,
-#	extra_link_args = ['-v'],
     ),
     Extension(
         'challenge.converters',
