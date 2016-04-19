@@ -17,10 +17,10 @@ class SwigTestCase(unittest.TestCase):
         self.assertEqual(r.value, 5)
 
     def test_const_shared_ptr_return(self):
-        """Test that a Swig-built module can return a "shared_ptr<Doodad>".
+        """Test that a Swig-built module can return a "shared_ptr<Doodad const>".
         """
         r = challenge.converters.make_csptr("a", 5)
-        self.assertIsInstance(r, challenge.basics.Doodad)
+        self.assertIsInstance(r, challenge.basics.ImmutableDoodad)
         self.assertEqual(r.name, "a")
         self.assertEqual(r.value, 5)
 
@@ -36,7 +36,7 @@ class SwigTestCase(unittest.TestCase):
         d = challenge.basics.Doodad("c", 7)
         self.assertTrue(challenge.converters.accept_cref(d, "c", 7))
 
-    def test_pass_reference(self):
+    def test_pass_shared_ptr(self):
         """Test that a Swig-built module can accept "shared_ptr<Doodad>".
         """
         d = challenge.basics.Doodad("d", 8)
@@ -45,7 +45,7 @@ class SwigTestCase(unittest.TestCase):
     def test_pass_const_reference(self):
         """Test that a Swig-built module can accept "shared_ptr<Doodad const>".
         """
-        d = challenge.basics.Doodad("e", 9)
+        d = challenge.basics.ImmutableDoodad("e", 9)
         self.assertTrue(challenge.converters.accept_csptr(d, "e", 9))
 
     def test_const_guarantees(self):
