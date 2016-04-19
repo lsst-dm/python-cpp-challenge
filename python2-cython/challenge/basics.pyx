@@ -156,3 +156,37 @@ cdef isEqualID(ImmutableDoodad a, Doodad b):
 cdef isNotEqualID(ImmutableDoodad a, Doodad b):
     return a.constptr.get() != b.thisptr.get()
 
+cdef public newDoodadFromSptr(shared_ptr[_Doodad] _d):
+    """Create new Doodad from shared_ptr<Doodad>
+    """
+    d = Doodad(init=False)
+    d.thisptr = move(_d)
+
+    return d
+
+cdef public newImmutableDoodadFromCsptr(shared_ptr[const _Doodad] _d):
+    """Create new ImmutableDoodad from shared_ptr<const Doodad>
+    """
+    d = ImmutableDoodad(init=False)
+    d.constptr = _d # should really be move, but cython doesn't like this
+
+    return d
+
+# Cast might fail so marked with except +
+cdef public bool sptrFromDoodad(object _d, shared_ptr[_Doodad] *ptr) except + :
+    """Get shared_ptr<Doodad> from input Python object if it is a Doodad
+    """
+    d = <Doodad?> _d
+    ptr[0] = d.thisptr
+
+    return True # cannot catch exception here
+
+# Cast might fail so marked with except +
+cdef public bool csptrFromImmutableDoodad(object _d, shared_ptr[const _Doodad] *ptr) except + :
+    """Get shared_ptr<const Doodad> from input Python object if it is an ImmutableDoodad
+    """
+    d = <ImmutableDoodad?> _d
+    ptr[0] = d.constptr
+
+    return True # cannot catch exception here
+
