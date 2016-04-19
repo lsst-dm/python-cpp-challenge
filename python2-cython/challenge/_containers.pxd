@@ -1,3 +1,6 @@
+"""Declarations of C++ types for containers module to make them visible to Cython
+"""
+
 from libcpp.memory cimport unique_ptr
 from libcpp.memory cimport shared_ptr
 from libcpp.string cimport string
@@ -16,5 +19,4 @@ cdef extern from "containers.hpp" namespace "containers":
         void assign(vector[shared_ptr[Doodad]] &items)
         void add(shared_ptr[Doodad] item)
         map[string, shared_ptr[Doodad]] as_map() const;
-#        void add(WhatsIt &it)
 

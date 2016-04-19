@@ -1,3 +1,6 @@
+"""Definitions of Python extension types for basics module
+"""
+
 from libcpp cimport bool
 from libcpp.memory cimport shared_ptr
 from cython.operator cimport dereference as deref
@@ -18,14 +21,30 @@ cpdef adjacent(Secret a, Secret b):
     return _adjacent(deref(a.thisptr), deref(b.thisptr))
 
 cdef _WhatsIt from_tuple(tuple t):
+    """Helper function only visible from Cython.
+    """
+
     cdef _WhatsIt w = _WhatsIt(t[0], t[1])
 
     return w
 
 cdef class Secret:
+    """Opaque type only for use by Doodad.
+    """
+
     cdef const _Secret *thisptr
 
 cdef class Doodad:
+    """Python interface to C++ type Doodad.
+
+    Parameters
+    ----------
+    name : str | tuple
+        When tuple, a pair of name, value. Otherwise a string.
+    value : int
+        A value
+    """
+
     def __init__(self, name=None, value=1, init=True):
         if init:
             if isinstance(name, tuple):
@@ -36,6 +55,10 @@ cdef class Doodad:
                 raise TypeError("a string or tuple is required")
 
     def __richcmp__(self, other, int op):
+        """Comparison operator
+        
+        provides '==' and '!='
+        """
         if op == Py_EQ and isinstance(other, Doodad):
             return isEqualDD(self, other)
         elif op == Py_EQ and isinstance(other, ImmutableDoodad):
@@ -48,6 +71,8 @@ cdef class Doodad:
             raise NotImplementedError
 
     def clone(self):
+        """Calls C++ clone method and returns a new Python Doodad
+        """
         d = Doodad(init=False)
 
         d.thisptr = move(deref(self.thisptr).clone())
@@ -56,20 +81,35 @@ cdef class Doodad:
 
     @staticmethod
     def get_const():
+        """Returns an ImmutableDoodad instance
+        """
         d = ImmutableDoodad(init=False)
         d.constptr = _Doodad.get_const()
 
         return d
 
     def read(self, t):
+        """Read new data
+
+        Parameters
+        ----------
+        t : tuple
+            (name, value) pair of (str, int) type.
+        """
         deref(self.thisptr).read(from_tuple(t))
 
     def write(self):
+        """Write current data
+
+        Returns tuple with (name, value)
+        """
         cdef _WhatsIt w = deref(self.thisptr).write()
 
         return (w.a, w.b)
 
     def get_secret(self):
+        """Get opaque Secret object
+        """
         s = Secret()
 
         s.thisptr = &deref(self.thisptr).get_secret()
@@ -89,6 +129,15 @@ cdef class Doodad:
             deref(self.thisptr).value = _value
 
 cdef class ImmutableDoodad:
+    """Python interface to C++ type 'const Doodad'.
+
+    Parameters
+    ----------
+    name : str | tuple
+        When tuple, a pair of name, value. Otherwise a string.
+    value : int
+        A value
+    """
     cdef shared_ptr[const _Doodad] constptr
 
     def __init__(self, name=None, value=1, init=True):
@@ -101,6 +150,10 @@ cdef class ImmutableDoodad:
                 raise TypeError("a string or tuple is required")
 
     def __richcmp__(self, other, int op):
+        """Comparison operator
+        
+        provides '==' and '!='
+        """
         if op == Py_EQ and isinstance(other, ImmutableDoodad):
             return isEqualII(self, other)
         elif op == Py_EQ and isinstance(other, Doodad):
@@ -114,12 +167,18 @@ cdef class ImmutableDoodad:
 
     @staticmethod
     def get_const():
+        """Returns an ImmutableDoodad instance
+        """
         d = ImmutableDoodad(init=False)
         d.constptr = _Doodad.get_const()
 
         return d
 
     def write(self):
+        """Write current data
+
+        Returns tuple with (name, value)
+        """
         cdef _WhatsIt w = deref(self.constptr).write()
 
         return (w.a, w.b)
@@ -132,6 +191,7 @@ cdef class ImmutableDoodad:
         def __get__(self):
             return deref(self.constptr).value
 
+# Helper functions for comparison operator
 cdef isEqualDD(Doodad a, Doodad b):
     return a.thisptr.get() == b.thisptr.get()
 
