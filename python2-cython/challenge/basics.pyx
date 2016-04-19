@@ -6,6 +6,7 @@ from cpython.object cimport Py_EQ, Py_NE
 from _basics cimport move
 from _basics cimport compare as _compare
 from _basics cimport adjacent as _adjacent
+from basics cimport Doodad
 from _basics cimport Doodad as _Doodad
 from _basics cimport Secret as _Secret
 from _basics cimport WhatsIt as _WhatsIt
@@ -25,8 +26,6 @@ cdef class Secret:
     cdef const _Secret *thisptr
 
 cdef class Doodad:
-    cdef shared_ptr[_Doodad] thisptr
-
     def __init__(self, name=None, value=1, init=True):
         if init:
             if isinstance(name, tuple):
