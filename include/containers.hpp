@@ -4,7 +4,6 @@
 #include "basics.hpp"
 #include <vector>
 #include <map>
-#include <iostream>
 
 namespace containers {
 
