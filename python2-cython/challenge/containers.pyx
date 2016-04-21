@@ -57,8 +57,8 @@ cdef class DoodadSet:
     cpdef as_list(self):
         """Return Python list of objects in set
 
-        Note that new Python objects will be created share
-        the same underlying C++ Doodad's stored in the set.
+        Note that the new Python objects that will be created will
+        share C++ Doodads with the set.
         """
         cdef vector[shared_ptr[_Doodad]] v = self.inst.as_vector()
         results = []
@@ -71,8 +71,8 @@ cdef class DoodadSet:
     cpdef as_dict(self):
         """Return Python dict of objects in set
 
-        Note that new Python objects will be created share
-        the same underlying C++ Doodad's stored in the set.
+        Note that the new Python objects that will be created will
+        share C++ Doodads with the set.
         """
         cdef map[string, shared_ptr[_Doodad]] m = self.inst.as_map()
         results = {}
@@ -83,12 +83,12 @@ cdef class DoodadSet:
         return results
 
     cpdef assign(self, seq) except +:
-        """Assign Doodad's to set
+        """Assign Doodads to set
 
         Parameters
         ----------
         seq : sequence
-            Any Python sequence (e.g. list, tuple) of Doodad's
+            Any Python sequence (e.g. list, tuple) of Doodads
         """
         cdef vector[shared_ptr[_Doodad]] v
         for item in seq:
