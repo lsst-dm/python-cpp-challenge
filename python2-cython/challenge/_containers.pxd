@@ -1,17 +1,19 @@
 """Declarations of C++ types for containers module to make them visible to Cython
 """
-
 from libcpp.memory cimport unique_ptr
 from libcpp.memory cimport shared_ptr
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.map cimport map
 from libcpp cimport bool
+
 from _basics cimport Doodad
 from _basics cimport WhatsIt
 
+
 cdef extern from "containers.hpp" namespace "containers":
     cdef cppclass DoodadSet:
+
         size_t size() const
         vector[shared_ptr[Doodad]].const_iterator begin() const
         vector[shared_ptr[Doodad]].const_iterator end() const

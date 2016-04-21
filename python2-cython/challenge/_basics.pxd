@@ -1,10 +1,10 @@
 """Declarations of C++ types for basics module to make them visible to Cython
 """
-
 from libcpp.memory cimport unique_ptr
 from libcpp.memory cimport shared_ptr
 from libcpp.string cimport string
 from libcpp cimport bool
+
 
 cdef extern from "basics.hpp" namespace "basics":
     struct WhatsIt:
@@ -22,9 +22,7 @@ cdef extern from "basics.hpp" namespace "basics":
         unique_ptr[Doodad] clone()
         @staticmethod
         shared_ptr[const Doodad] get_const()
-
         const Secret& get_secret()
-
         string name
         int value
 
