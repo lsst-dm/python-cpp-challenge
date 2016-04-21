@@ -8,8 +8,8 @@ from libcpp.map cimport map
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as incr
 
-from basics import Doodad
-from basics cimport Doodad
+from basics import MutableDoodad
+from basics cimport MutableDoodad
 from _basics cimport move
 from _basics cimport Doodad as _Doodad
 from _containers cimport DoodadSet as _DoodadSet
@@ -20,7 +20,7 @@ cdef class DoodadSet:
     """
     cdef _DoodadSet inst
     cdef vector[shared_ptr[_Doodad]].const_iterator it
-    Item = Doodad
+    Item = MutableDoodad
     def __len__(self):
         return self.inst.size()
 
@@ -35,35 +35,35 @@ cdef class DoodadSet:
     def __next__(self):
         if self.it == self.inst.end():
             raise StopIteration()
-        d = Doodad(init=False)
+        d = MutableDoodad(init=False)
         d.thisptr = deref(self.it)
         incr(self.it)
         return d
 
     cpdef add(self, item) except +:
-        """Add Doodad to set
+        """Add MutableDoodad to set
 
         Parameters
         ----------
-        item : Doodad
+        item : MutableDoodad
             The item to add
         """
         if isinstance(item, tuple):
-            d = Doodad(item)
+            d = MutableDoodad(item)
         else:
-            d = <Doodad?> item
+            d = <MutableDoodad?> item
         self.inst.add(d.thisptr)
 
     cpdef as_list(self):
         """Return Python list of objects in set
 
         Note that the new Python objects that will be created will
-        share C++ Doodads with the set.
+        share C++ MutableDoodads with the set.
         """
         cdef vector[shared_ptr[_Doodad]] v = self.inst.as_vector()
         results = []
         for item in v:
-            d = Doodad(init=False)
+            d = MutableDoodad(init=False)
             d.thisptr = move(item)
             results.append(d)
         return results
@@ -72,26 +72,26 @@ cdef class DoodadSet:
         """Return Python dict of objects in set
 
         Note that the new Python objects that will be created will
-        share C++ Doodads with the set.
+        share C++ MutableDoodads with the set.
         """
         cdef map[string, shared_ptr[_Doodad]] m = self.inst.as_map()
         results = {}
         for k in m:
-            d = Doodad(init=False)
+            d = MutableDoodad(init=False)
             d.thisptr = move(k.second)
             results[k.first] = d
         return results
 
     cpdef assign(self, seq) except +:
-        """Assign Doodads to set
+        """Assign MutableDoodads to set
 
         Parameters
         ----------
         seq : sequence
-            Any Python sequence (e.g. list, tuple) of Doodads
+            Any Python sequence (e.g. list, tuple) of MutableDoodads
         """
         cdef vector[shared_ptr[_Doodad]] v
         for item in seq:
-            d = <Doodad?> item
+            d = <MutableDoodad?> item
             v.push_back(d.thisptr)
         self.inst.assign(v)

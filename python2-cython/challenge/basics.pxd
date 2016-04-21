@@ -6,6 +6,6 @@ from libcpp.string cimport string
 from _basics cimport Doodad as _Doodad
 
 
-cdef class Doodad:
+cdef class MutableDoodad:
 
     cdef shared_ptr[_Doodad] thisptr

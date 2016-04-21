@@ -19,11 +19,11 @@ class DoodadSetTestCase(unittest.TestCase):
 
     def __init__(self, *args, **kwds):
         super(DoodadSetTestCase, self).__init__(*args, **kwds)
-        self.addTypeEqualityFunc(challenge.basics.Doodad, self.compare_Doodads)
+        self.addTypeEqualityFunc(challenge.basics.MutableDoodad, self.compare_Doodads)
 
     def setUp(self):
-        self.item0 = challenge.basics.Doodad("a", 0)
-        self.item1 = challenge.basics.Doodad("b", 1)
+        self.item0 = challenge.basics.MutableDoodad("a", 0)
+        self.item1 = challenge.basics.MutableDoodad("b", 1)
         self.container = challenge.containers.DoodadSet()
         self.container.add(self.item0)
         self.container.add(self.item1)
@@ -55,9 +55,9 @@ class DoodadSetTestCase(unittest.TestCase):
         """Test that we can assign a full list to the Doodad.
         """
         r = [
-            challenge.basics.Doodad("c", 4),
-            challenge.basics.Doodad("d", 5),
-            challenge.basics.Doodad("e", 6)
+            challenge.basics.MutableDoodad("c", 4),
+            challenge.basics.MutableDoodad("d", 5),
+            challenge.basics.MutableDoodad("e", 6)
         ]
         self.container.assign(r)
         self.assertEqual(self.container.as_list(), r)
@@ -84,7 +84,7 @@ class DoodadSetTestCase(unittest.TestCase):
         """Test that we've defined the C++ Item typedef as a class attribute.
         """
         self.assertEqual(challenge.containers.DoodadSet.Item,
-                         challenge.basics.Doodad)
+                         challenge.basics.MutableDoodad)
 
 if __name__ == "__main__":
     unittest.main()
