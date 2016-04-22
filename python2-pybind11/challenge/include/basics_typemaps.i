@@ -39,6 +39,7 @@
         std::shared_ptr<basics::Doodad> ptr(p.cast<std::shared_ptr<basics::Doodad>>());
         $1 = ptr;
     } catch(...) {
+        PyErr_SetString(PyExc_RuntimeError, "could not cast to shared_ptr<Doodad>");
         return nullptr;
     }
 }
