@@ -38,6 +38,8 @@ private:
     std::vector<std::shared_ptr<basics::Doodad>>::const_iterator it_end;
 };
 
+} // namespace containers
+
 PYBIND11_PLUGIN(containers) {
     py::module m("containers", "wrapped C++ containers module");
 
@@ -46,17 +48,15 @@ PYBIND11_PLUGIN(containers) {
         .def("__len__", &containers::DoodadSet::size)
         .def("add", [](containers::DoodadSet &ds, std::shared_ptr<basics::Doodad> &d) { ds.add(d); })
         .def("add", [](containers::DoodadSet &ds, std::pair<std::string, int> p) { ds.add(basics::WhatsIt{p.first, p.second}) ; })
-        .def("__iter__", [](containers::DoodadSet &ds) { return DoodadSetIterator{ds.as_vector()}; })
+        .def("__iter__", [](containers::DoodadSet &ds) { return containers::DoodadSetIterator{ds.as_vector()}; })
         .def("as_dict", &containers::DoodadSet::as_map)
         .def("as_list", &containers::DoodadSet::as_vector)
         .def("assign", &containers::DoodadSet::assign);
 
     py::class_<containers::DoodadSetIterator>(m, "DoodadSetIterator")
-        .def("__iter__", [](DoodadSetIterator &it) -> DoodadSetIterator& { return it; })
-        .def("__next__", &DoodadSetIterator::next);
+        .def("__iter__", [](containers::DoodadSetIterator &it) -> containers::DoodadSetIterator& { return it; })
+        .def("__next__", &containers::DoodadSetIterator::next);
 
     return m.ptr();
 }
-
-} // namespace containers
 

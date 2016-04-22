@@ -6,8 +6,6 @@ namespace py = pybind11;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-namespace basics {
-
 PYBIND11_PLUGIN(basics) {
     py::module m("basics", "wrapped C++ basics module");
 
@@ -35,6 +33,4 @@ PYBIND11_PLUGIN(basics) {
 
     return m.ptr();
 }
-
-} // namespace basics
 
