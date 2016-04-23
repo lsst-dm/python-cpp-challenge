@@ -12,17 +12,7 @@ namespace containers {
 
 class DoodadSetIterator {
 public:
-    /* Keep copy of DoodadSet elements (as shared_ptrs)
-     * This is needed because the iterator might outlive the container.
-     * A more elegant solution would be to have DoodadSet inherit from
-     * std::enable_shared_from_this<DoodadSet>, so that an
-     * iterator can keep the container alive while it is still in use
-     * even though the container has been garbage collected on the Python
-     * side, but that would require modifying the C++ implementation. */
-    DoodadSetIterator(std::vector<std::shared_ptr<basics::Doodad>> &&seq_) : seq{std::move(seq_)} {
-        it = begin(seq);
-        it_end = end(seq);
-    };
+    DoodadSetIterator(DoodadSet::iterator b, DoodadSet::iterator e) : it{b}, it_end{e} {};
 
     std::shared_ptr<basics::Doodad> next() {
         if (it == it_end) {
@@ -33,9 +23,8 @@ public:
     };
 
 private:
-    std::vector<std::shared_ptr<basics::Doodad>> seq;
-    std::vector<std::shared_ptr<basics::Doodad>>::const_iterator it;
-    std::vector<std::shared_ptr<basics::Doodad>>::const_iterator it_end;
+    DoodadSet::iterator it;
+    DoodadSet::iterator it_end;
 };
 
 } // namespace containers
@@ -48,7 +37,7 @@ PYBIND11_PLUGIN(containers) {
         .def("__len__", &containers::DoodadSet::size)
         .def("add", (void (containers::DoodadSet::*)(std::shared_ptr<basics::Doodad>)) &containers::DoodadSet::add)
         .def("add", [](containers::DoodadSet &ds, std::pair<std::string, int> p) { ds.add(basics::WhatsIt{p.first, p.second}) ; })
-        .def("__iter__", [](containers::DoodadSet &ds) { return containers::DoodadSetIterator{ds.as_vector()}; })
+        .def("__iter__", [](containers::DoodadSet &ds) { return containers::DoodadSetIterator{ds.begin(), ds.end()}; }, py::keep_alive<0,1>())
         .def("as_dict", &containers::DoodadSet::as_map)
         .def("as_list", &containers::DoodadSet::as_vector)
         .def("assign", &containers::DoodadSet::assign);
