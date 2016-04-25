@@ -4,10 +4,13 @@
 %}
 
 %typemap(out) std::shared_ptr<basics::Doodad> {
-    /* Use a pybind11 typecaster to create a PyObject from a shared_ptr<Doodad> */
-    pybind11::detail::type_caster<std::shared_ptr<basics::Doodad>> caster;
-    pybind11::handle out = caster.cast($1, pybind11::return_value_policy::take_ownership, pybind11::handle());
-    $result = out.ptr();
+    try {
+        pybind::object out = pybind11:cast($1);
+        $result = out.ptr();
+    } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError, "cast error");
+        return nullptr;
+    }
 }
 
 //%typemap(out) std::shared_ptr<basics::Doodad const> {
@@ -32,14 +35,10 @@
 //}
 
 %typemap(in) std::shared_ptr<basics::Doodad> {
-    /* First make a pybind11 object handler around the PyObject *
-     * Then, cast it to a shared_ptr<Doodad> using the pybind11 caster. */
-    pybind11::object p{$input, true};
     try {
-        std::shared_ptr<basics::Doodad> ptr(p.cast<std::shared_ptr<basics::Doodad>>());
-        $1 = ptr;
+        $1 = pybind11::handle($input).cast<std::shared_ptr<basics::Doodad>>();
     } catch(...) {
-        PyErr_SetString(PyExc_RuntimeError, "could not cast to shared_ptr<Doodad>");
+        PyErr_SetString(PyExc_RuntimeError, "cast error");
         return nullptr;
     }
 }
