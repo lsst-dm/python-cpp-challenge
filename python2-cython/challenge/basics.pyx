@@ -1,7 +1,5 @@
 """Definitions of Python extension types for basics module
 """
-import abc
-
 from libcpp cimport bool
 from libcpp.memory cimport shared_ptr
 from cython.operator cimport dereference as deref
@@ -10,7 +8,7 @@ from cpython.object cimport Py_EQ, Py_NE
 from _basics cimport move
 from _basics cimport compare as _compare
 from _basics cimport adjacent as _adjacent
-from basics cimport MutableDoodad
+from basics cimport Doodad
 from _basics cimport Doodad as _Doodad
 from _basics cimport Secret as _Secret
 from _basics cimport WhatsIt as _WhatsIt
@@ -32,13 +30,13 @@ cdef _WhatsIt from_tuple(tuple t):
 
 
 cdef class Secret:
-    """Opaque type only for use by MutableDoodad.
+    """Opaque type only for use by Doodad.
     """
     cdef const _Secret *thisptr
 
 
-cdef class MutableDoodad:
-    """Python interface to C++ type MutableDoodad.
+cdef class Doodad:
+    """Python interface to C++ type Doodad.
 
     Parameters
     ----------
@@ -62,11 +60,11 @@ cdef class MutableDoodad:
         
         provides '==' and '!='
         """
-        if op == Py_EQ and isinstance(other, MutableDoodad):
+        if op == Py_EQ and isinstance(other, Doodad):
             return isEqualDD(self, other)
         elif op == Py_EQ and isinstance(other, ImmutableDoodad):
             return isEqualDI(self, other)
-        elif op == Py_NE and isinstance(other, MutableDoodad):
+        elif op == Py_NE and isinstance(other, Doodad):
             return isNotEqualDD(self, other)
         elif op == Py_NE and isinstance(other, ImmutableDoodad):
             return isNotEqualDI(self, other)
@@ -75,9 +73,9 @@ cdef class MutableDoodad:
 
 
     def clone(self):
-        """Calls C++ clone method and returns a new Python MutableDoodad
+        """Calls C++ clone method and returns a new Python Doodad
         """
-        d = MutableDoodad(init=False)
+        d = Doodad(init=False)
         d.thisptr = move(deref(self.thisptr).clone())
         return d
 
@@ -128,7 +126,7 @@ cdef class MutableDoodad:
 
 
 cdef class ImmutableDoodad:
-    """Python interface to C++ type 'const MutableDoodad'.
+    """Python interface to C++ type 'const Doodad'.
 
     Parameters
     ----------
@@ -156,11 +154,11 @@ cdef class ImmutableDoodad:
         """
         if op == Py_EQ and isinstance(other, ImmutableDoodad):
             return isEqualII(self, other)
-        elif op == Py_EQ and isinstance(other, MutableDoodad):
+        elif op == Py_EQ and isinstance(other, Doodad):
             return isEqualID(self, other)
         elif op == Py_NE and isinstance(other, ImmutableDoodad):
             return isNotEqualII(self, other)
-        elif op == Py_NE and isinstance(other, MutableDoodad):
+        elif op == Py_NE and isinstance(other, Doodad):
             return isNotEqualID(self, other)
         else:
             raise NotImplementedError
@@ -190,20 +188,12 @@ cdef class ImmutableDoodad:
             return deref(self.constptr).value
 
 
-class Doodad:
-    __metaclass__ = abc.ABCMeta
-
-
-Doodad.register(MutableDoodad)
-Doodad.register(ImmutableDoodad)
-
-
 # Helper functions for comparison operator
-cdef isEqualDD(MutableDoodad a, MutableDoodad b):
+cdef isEqualDD(Doodad a, Doodad b):
     return a.thisptr.get() == b.thisptr.get()
 
 
-cdef isNotEqualDD(MutableDoodad a, MutableDoodad b):
+cdef isNotEqualDD(Doodad a, Doodad b):
     return a.thisptr.get() != b.thisptr.get()
 
 
@@ -215,32 +205,32 @@ cdef isNotEqualII(ImmutableDoodad a, ImmutableDoodad b):
     return a.constptr.get() != b.constptr.get()
 
 
-cdef isEqualDI(MutableDoodad a, ImmutableDoodad b):
+cdef isEqualDI(Doodad a, ImmutableDoodad b):
     return a.thisptr.get() == b.constptr.get()
 
 
-cdef isNotEqualDI(MutableDoodad a, ImmutableDoodad b):
+cdef isNotEqualDI(Doodad a, ImmutableDoodad b):
     return a.thisptr.get() != b.constptr.get()
 
 
-cdef isEqualID(ImmutableDoodad a, MutableDoodad b):
+cdef isEqualID(ImmutableDoodad a, Doodad b):
     return a.constptr.get() == b.thisptr.get()
 
 
-cdef isNotEqualID(ImmutableDoodad a, MutableDoodad b):
+cdef isNotEqualID(ImmutableDoodad a, Doodad b):
     return a.constptr.get() != b.thisptr.get()
 
 
 cdef public newDoodadFromSptr(shared_ptr[_Doodad] _d):
-    """Create new MutableDoodad from shared_ptr<Doodad>
+    """Create new Doodad from shared_ptr<Doodad>
     """
-    d = MutableDoodad(init=False)
+    d = Doodad(init=False)
     d.thisptr = move(_d)
     return d
 
 
 cdef public newImmutableDoodadFromCsptr(shared_ptr[const _Doodad] _d):
-    """Create new ImmutableDoodad from shared_ptr<const MutableDoodad>
+    """Create new ImmutableDoodad from shared_ptr<const Doodad>
     """
     d = ImmutableDoodad(init=False)
     d.constptr = _d # should really be move, but cython doesn't like this
@@ -249,16 +239,16 @@ cdef public newImmutableDoodadFromCsptr(shared_ptr[const _Doodad] _d):
 
 # Cast might fail so marked with except +
 cdef public bool sptrFromDoodad(object _d, shared_ptr[_Doodad] *ptr) except + :
-    """Get shared_ptr<Doodad> from input Python object if it is a MutableDoodad
+    """Get shared_ptr<Doodad> from input Python object if it is a Doodad
     """
-    d = <MutableDoodad?> _d
+    d = <Doodad?> _d
     ptr[0] = d.thisptr
     return True # cannot catch exception here
 
 
 # Cast might fail so marked with except +
 cdef public bool csptrFromImmutableDoodad(object _d, shared_ptr[const _Doodad] *ptr) except + :
-    """Get shared_ptr<const MutableDoodad> from input Python object if it is an ImmutableDoodad
+    """Get shared_ptr<const Doodad> from input Python object if it is an ImmutableDoodad
     """
     d = <ImmutableDoodad?> _d
     ptr[0] = d.constptr

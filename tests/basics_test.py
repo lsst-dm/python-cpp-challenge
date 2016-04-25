@@ -14,7 +14,7 @@ class DoodadTestCase(unittest.TestCase):
     def test_standard_ctor_pos_all(self):
         """Test standard constructor with all positional arguments.
         """
-        d = challenge.basics.MutableDoodad("a", 0)
+        d = challenge.basics.Doodad("a", 0)
         self.assertIsInstance(d, challenge.basics.Doodad)
         self.assertEqual(d.name, "a")
         self.assertEqual(d.value, 0)
@@ -22,7 +22,7 @@ class DoodadTestCase(unittest.TestCase):
     def test_standard_ctor_pos_default(self):
         """Test standard constructor with positional arguments, with a default.
         """
-        d = challenge.basics.MutableDoodad("b")
+        d = challenge.basics.Doodad("b")
         self.assertIsInstance(d, challenge.basics.Doodad)
         self.assertEqual(d.name, "b")
         self.assertEqual(d.value, 1)
@@ -30,7 +30,7 @@ class DoodadTestCase(unittest.TestCase):
     def test_standard_ctor_kwarg_al(self):
         """Test standard constructor with all keyword arguments.
         """
-        d = challenge.basics.MutableDoodad(name="c", value=2)
+        d = challenge.basics.Doodad(name="c", value=2)
         self.assertIsInstance(d, challenge.basics.Doodad)
         self.assertEqual(d.name, "c")
         self.assertEqual(d.value, 2)
@@ -38,7 +38,7 @@ class DoodadTestCase(unittest.TestCase):
     def test_standard_ctor_kwarg_default(self):
         """Test standard constructor with kwargs and a default value.
         """
-        d = challenge.basics.MutableDoodad(name="d")
+        d = challenge.basics.Doodad(name="d")
         self.assertIsInstance(d, challenge.basics.Doodad)
         self.assertEqual(d.name, "d")
         self.assertEqual(d.value, 1)
@@ -47,7 +47,7 @@ class DoodadTestCase(unittest.TestCase):
         """Test standard constructor with a combination of positional and
         keyword arguments.
         """
-        d = challenge.basics.MutableDoodad("e", value=3)
+        d = challenge.basics.Doodad("e", value=3)
         self.assertIsInstance(d, challenge.basics.Doodad)
         self.assertEqual(d.name, "e")
         self.assertEqual(d.value, 3)
@@ -56,7 +56,7 @@ class DoodadTestCase(unittest.TestCase):
         """Test construction from tuple (what we've mapped C++ WhatsIt to).
         """
         w = ("f", 4)
-        d = challenge.basics.MutableDoodad(w)
+        d = challenge.basics.Doodad(w)
         self.assertIsInstance(d, challenge.basics.Doodad)
         self.assertEqual(d.name, "f")
         self.assertEqual(d.value, 4)
@@ -64,7 +64,7 @@ class DoodadTestCase(unittest.TestCase):
     def test_clone(self):
         """Test calling the clone() method.
         """
-        d1 = challenge.basics.MutableDoodad("g", 5)
+        d1 = challenge.basics.Doodad("g", 5)
         d2 = d1.clone()
         self.assertEqual(d1.name, d2.name)
         self.assertEqual(d1.value, d2.value)
@@ -75,7 +75,7 @@ class DoodadTestCase(unittest.TestCase):
     def test_read(self):
         """Test reading a WhatsIt (tuple) into a Doodad.
         """
-        d = challenge.basics.MutableDoodad("h", 6)
+        d = challenge.basics.Doodad("h", 6)
         d.read(("i", 7))
         self.assertEqual(d.name, "i")
         self.assertEqual(d.value, 7)
@@ -83,24 +83,24 @@ class DoodadTestCase(unittest.TestCase):
     def test_write(self):
         """Test writing a Doodad into a WhatsIt (tuple).
         """
-        d = challenge.basics.MutableDoodad("j", 8)
+        d = challenge.basics.Doodad("j", 8)
         self.assertEqual(d.write(), ("j", 8))
 
     def test_const(self):
         """Test that modifying const Doodds is not allowed.
         """
-        d = challenge.basics.MutableDoodad.get_const()
-        self.assertIsInstance(d, challenge.basics.Doodad)
+        d = challenge.basics.Doodad.get_const()
+        self.assertIsInstance(d, challenge.basics.ImmutableDoodad)
         self.assertRaises(AttributeError, setattr, d, "name", "k")
         self.assertRaises(AttributeError, setattr, d, "value", 9)
 
     def test_equality(self):
         """Test that equality comparison works at the C++ pointer level.
         """
-        d1 = challenge.basics.MutableDoodad.get_const()
-        d2 = challenge.basics.MutableDoodad.get_const()
+        d1 = challenge.basics.Doodad.get_const()
+        d2 = challenge.basics.Doodad.get_const()
         self.assertEqual(d1, d2)
-        self.assertNotEqual(d1, challenge.basics.MutableDoodad(d1.name, d1.value))
+        self.assertNotEqual(d1, challenge.basics.Doodad(d1.name, d1.value))
 
 if __name__ == "__main__":
     unittest.main()
