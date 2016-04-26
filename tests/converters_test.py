@@ -30,7 +30,8 @@ class SwigTestCase(unittest.TestCase):
         self.assertTrue(challenge.converters.accept_ref(d, "b", 6))
 
     def test_pass_const_reference(self):
-        """Test that a Swig-built module can accept "Doodad const &".
+        """Test that a Swig-built module can accept "Doodad const &",
+        even when the passed object is not const.
         """
         d = challenge.basics.Doodad("c", 7)
         self.assertTrue(challenge.converters.accept_cref(d, "c", 7))
@@ -41,8 +42,9 @@ class SwigTestCase(unittest.TestCase):
         d = challenge.basics.Doodad("d", 8)
         self.assertTrue(challenge.converters.accept_sptr(d, "d", 8))
 
-    def test_pass_const_reference(self):
-        """Test that a Swig-built module can accept "shared_ptr<Doodad const>".
+    def test_pass_const_shared_ptr(self):
+        """Test that a Swig-built module can accept "shared_ptr<Doodad const>",
+        even when the passed object is not const.
         """
         d = challenge.basics.Doodad("e", 9)
         self.assertTrue(challenge.converters.accept_csptr(d, "e", 9))
