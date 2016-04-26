@@ -1,6 +1,6 @@
 import os
 import sys
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 from Cython.Build import cythonize
 
 # Remove the "-Wstrict-prototypes" compiler option, which isn't valid for C++.
@@ -59,6 +59,7 @@ setup(
     name='challenge',
     packages=['challenge'],
     version='1.0',
+    test_suite = 'tests',
     description='C++/Python bindings challenge with Cython',
     ext_modules=cythonize(basics_module) + cythonize(containers_module) + [converters_module, ],
 )
