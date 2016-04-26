@@ -57,6 +57,7 @@ setup(
     version='0.0.1',
     author='Pim Schellart',
     author_email='P.Schellart@princeton.edu',
+    test_suite="tests",
     description='Solution to the Python C++ bindings challenge with pybind11.',
     ext_modules=ext_modules,
 )
