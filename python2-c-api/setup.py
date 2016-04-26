@@ -8,16 +8,20 @@ for key, value in cfg_vars.items():
     if type(value) == str:
         cfg_vars[key] = value.replace("-Wstrict-prototypes", "")
 
+kwds = dict(
+    extra_compile_args=['-std=c++11'],
+    include_dirs=[
+        os.path.join('..', 'include'),
+        os.path.join('include')
+    ],
+)
+
 utilities_module = Extension(
     'challenge.utilities',
     sources=[
         os.path.join('challenge', 'utilities.cpp'),
     ],
-    include_dirs=[
-        os.path.join('..', 'include'),
-        os.path.join('include')
-    ],
-    extra_compile_args=['-O0', '-std=c++11']
+    **kwds
 )
 
 basics_module = Extension(
@@ -27,11 +31,7 @@ basics_module = Extension(
         os.path.join('challenge', 'utilities.cpp'),
         os.path.join('..', 'src', 'basics.cpp')
     ],
-    include_dirs=[
-        os.path.join('..', 'include'),
-        os.path.join('include')
-    ],
-    extra_compile_args=['-O0', '-std=c++11']
+    **kwds
 )
 
 extensions_module = Extension(
@@ -40,11 +40,7 @@ extensions_module = Extension(
         os.path.join('challenge', 'py_extensions.cpp'),
         os.path.join('..', 'src', 'extensions.cpp')
     ],
-    include_dirs=[
-        os.path.join('..', 'include'),
-        os.path.join('include')
-    ],
-    extra_compile_args=['-O0', '-std=c++11']
+    **kwds
 )
 
 containers_module = Extension(
@@ -53,11 +49,7 @@ containers_module = Extension(
         os.path.join('challenge', 'py_containers.cpp'),
         os.path.join('..', 'src', 'containers.cpp')
     ],
-    include_dirs=[
-        os.path.join('..', 'include'),
-        os.path.join('include')
-    ],
-    extra_compile_args=['-O0', '-std=c++11']
+    **kwds
 )
 
 converters_module = Extension(
@@ -65,12 +57,8 @@ converters_module = Extension(
     sources=[
         os.path.join('challenge', 'converters.i')
     ],
-    include_dirs=[
-        os.path.join('..', 'include'),
-        os.path.join('include')
-    ],
     swig_opts = ["-modern", "-c++", "-Iinclude", "-noproxy"],
-    extra_compile_args=['-O0', '-std=c++11']
+    **kwds
 )
 
 setup(
