@@ -29,27 +29,27 @@ std::shared_ptr<basics::Doodad> make_sptr(
     return std::shared_ptr<basics::Doodad>(new basics::Doodad(name, value));
 }
 
-//std::shared_ptr<basics::Doodad const> make_csptr(
-//    std::string const & name, int value
-//) {
-//    return std::shared_ptr<basics::Doodad const>(
-//        new basics::Doodad(name, value)
-//    );
-//}
-//
-//bool accept_ref(
-//    basics::Doodad & d,
-//    std::string const & name, int value
-//) {
-//    return d.name == name && d.value == value;
-//}
-//
-//bool accept_cref(
-//    basics::Doodad const & d,
-//    std::string const & name, int value
-//) {
-//    return d.name == name && d.value == value;
-//}
+std::shared_ptr<basics::Doodad const> make_csptr(
+    std::string const & name, int value
+) {
+    return std::shared_ptr<basics::Doodad const>(
+        new basics::Doodad(name, value)
+    );
+}
+
+bool accept_ref(
+    basics::Doodad & d,
+    std::string const & name, int value
+) {
+    return d.name == name && d.value == value;
+}
+
+bool accept_cref(
+    basics::Doodad const & d,
+    std::string const & name, int value
+) {
+    return d.name == name && d.value == value;
+}
 
 bool accept_sptr(
     std::shared_ptr<basics::Doodad> d,
@@ -58,11 +58,11 @@ bool accept_sptr(
     return d->name == name && d->value == value;
 }
 
-//bool accept_csptr(
-//    std::shared_ptr<basics::Doodad const> d,
-//    std::string const & name, int value
-//) {
-//    return d->name == name && d->value == value;
-//}
+bool accept_csptr(
+    std::shared_ptr<basics::Doodad const> d,
+    std::string const & name, int value
+) {
+    return d->name == name && d->value == value;
+}
 
 %}
