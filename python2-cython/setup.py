@@ -3,7 +3,14 @@ import sys
 from distutils.core import setup, Extension
 from Cython.Build import cythonize
 
-compile_args = ['-g', '-std=c++11', '-stdlib=libc++']
+# Remove the "-Wstrict-prototypes" compiler option, which isn't valid for C++.
+import distutils.sysconfig
+cfg_vars = distutils.sysconfig.get_config_vars()
+for key, value in cfg_vars.items():
+    if type(value) == str:
+        cfg_vars[key] = value.replace("-Wstrict-prototypes", "")
+
+compile_args = ['-g', '-std=c++11']
 
 if sys.platform == 'darwin':
     # Miniconda 3.19 provided Python on OSX is built against OSX deployment target version 10.5
@@ -11,6 +18,7 @@ if sys.platform == 'darwin':
     # then gives a clang: error:
     # invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)
     compile_args.append('-mmacosx-version-min=10.7')
+    compile_args.append('-stdlib=libc++')
 
 basics_module = Extension('challenge.basics',
     sources=[
