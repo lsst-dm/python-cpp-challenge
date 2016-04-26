@@ -11,6 +11,16 @@ for key, value in cfg_vars.items():
         cfg_vars[key] = value.replace("-Wstrict-prototypes", "")
 
 kwds = dict(
+    # pybind11 produces smaller binaries with C++14, but that's not available
+    # on our target platform and I'm too lazy to add conditional flags for
+    # a package that's mostly about reading rather than using the code.
+    # Using -fvisibility-hidden has similar benefits, but that's thwarted
+    # by distutils' requirement that the same compiler options be used for
+    # all object files in an Extension, combined with my preference for putting
+    # the C++ library code in the Python modules themselves instead of a
+    # separate shared library.
+    # In other words, don't use this as an example for how to compile pybind11
+    # code; look at the pybind11 FAQ instead.
     extra_compile_args=['-std=c++11'],
     include_dirs=[
         os.path.join('..', 'include'),
