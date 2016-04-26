@@ -14,7 +14,12 @@
 
 %typemap(in) basics::Doodad const & (std::shared_ptr<basics::Doodad const> tmp) {
     if (!csptrFromImmutableDoodad($input, &tmp)) {
-        return nullptr;
+        PyErr_Clear();
+        std::shared_ptr<basics::Doodad> tmp2;
+        if (!sptrFromDoodad($input, &tmp2)) {
+            return nullptr;
+        }
+        tmp = tmp2;
     }
     $1 = const_cast<basics::Doodad*>(tmp.get());
 }
@@ -35,7 +40,12 @@
 %typemap(in) std::shared_ptr<basics::Doodad const> {
     std::shared_ptr<basics::Doodad const> tmp;
     if (!csptrFromImmutableDoodad($input, &tmp)) {
-        return nullptr;
+        PyErr_Clear();
+        std::shared_ptr<basics::Doodad> tmp2;
+        if (!sptrFromDoodad($input, &tmp2)) {
+            return nullptr;
+        }
+        tmp = tmp2;
     }
     $1 = tmp;
 }
