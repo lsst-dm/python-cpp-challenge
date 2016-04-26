@@ -1,55 +1,54 @@
 import os, sys
-
-from distutils.core import setup, Extension
+from pip import locations
+from setuptools import setup, Extension
 from distutils import sysconfig
 
-cpp_args = ['-std=c++11', '-stdlib=libc++', '-mmacosx-version-min=10.7']
+# Remove the "-Wstrict-prototypes" compiler option, which isn't valid for C++.
+import distutils.sysconfig
+cfg_vars = distutils.sysconfig.get_config_vars()
+for key, value in cfg_vars.items():
+    if type(value) == str:
+        cfg_vars[key] = value.replace("-Wstrict-prototypes", "")
+
+kwds = dict(
+    extra_compile_args=['-std=c++11'],
+    include_dirs=[
+        os.path.join('..', 'include'),
+        os.path.join('include'),
+        os.path.dirname(locations.distutils_scheme('pybind11')['headers'])
+    ],
+)
 
 if sys.platform == 'darwin':
-    vars = sysconfig.get_config_vars()
-    vars['LDSHARED'] = vars['LDSHARED'].replace('-bundle', '-dynamiclib')
+    # Miniconda 3.19 provided Python on OSX is built against OSX deployment target version 10.5
+    # this doesn't work with C++11 in libc++. Compiling without the following directive
+    # then gives a clang: error:
+    # invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)
+    kwds["extra_compile_args"].append('-mmacosx-version-min=10.7')
+    kwds["extra_compile_args"].append('-stdlib=libc++')
+
 
 ext_modules = [
     Extension(
-	'libbasics',
-        ['src/basics.cpp'],
-        include_dirs=['include'],
-	language='c++',
-	extra_compile_args = cpp_args,
-    ),
-    Extension(
-	'libcontainers',
-        ['src/containers.cpp'],
-        include_dirs=['include'],
-	language='c++',
-	extra_compile_args = cpp_args,
-    ),
-    Extension(
         'challenge.basics',
-        ['challenge/basics.cpp'],
-        include_dirs=['pybind11/include', 'include'],
-        language='c++',
-        library_dirs=['.'],
-        libraries=['basics'],
-	extra_compile_args = cpp_args,
+        sources=[
+            os.path.join('challenge', 'basics.cpp'),
+            os.path.join('..', 'src', 'basics.cpp')
+        ],
+        **kwds
     ),
     Extension(
         'challenge.containers',
-        ['challenge/containers.cpp'],
-        include_dirs=['pybind11/include', 'include'],
-        language='c++',
-        library_dirs=['.'],
-        libraries=['basics','containers'],
-	extra_compile_args = cpp_args,
+        sources=[
+            os.path.join('challenge', 'containers.cpp'),
+            os.path.join('..', 'src', 'containers.cpp')
+        ],
+        **kwds
     ),
     Extension(
-        'challenge.converters',
-        ['challenge/converters.i'],
-        include_dirs=['pybind11/include', 'include', 'challenge/include'],
+        'challenge.converters', ['challenge/converters.i'],
         swig_opts=["-modern", "-c++", "-Ichallenge/include", "-noproxy"],
-        library_dirs=['.'],
-        libraries=['basics'],
-        extra_compile_args=cpp_args,
+        **kwds
     ),
 ]
 
