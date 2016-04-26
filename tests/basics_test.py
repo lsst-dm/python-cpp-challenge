@@ -90,9 +90,8 @@ class DoodadTestCase(unittest.TestCase):
         """Test that modifying const Doodds is not allowed.
         """
         d = challenge.basics.Doodad.get_const()
-        self.assertIsInstance(d, challenge.basics.Doodad)
-        self.assertRaises(TypeError, setattr, d, "name", "k")
-        self.assertRaises(TypeError, setattr, d, "value", 9)
+        self.assertRaises((AttributeError, TypeError), setattr, d, "name", "k")
+        self.assertRaises((AttributeError, TypeError), setattr, d, "value", 9)
 
     def test_equality(self):
         """Test that equality comparison works at the C++ pointer level.

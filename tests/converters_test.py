@@ -17,10 +17,9 @@ class SwigTestCase(unittest.TestCase):
         self.assertEqual(r.value, 5)
 
     def test_const_shared_ptr_return(self):
-        """Test that a Swig-built module can return a "shared_ptr<Doodad>".
+        """Test that a Swig-built module can return a "shared_ptr<Doodad const>".
         """
         r = challenge.converters.make_csptr("a", 5)
-        self.assertIsInstance(r, challenge.basics.Doodad)
         self.assertEqual(r.name, "a")
         self.assertEqual(r.value, 5)
 
