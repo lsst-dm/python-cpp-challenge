@@ -1,4 +1,5 @@
 import os
+import sys
 from setuptools import setup, Extension
 
 # Remove the "-Wstrict-prototypes" compiler option, which isn't valid for C++.
@@ -15,6 +16,14 @@ kwds = dict(
         os.path.join('include')
     ],
 )
+
+if sys.platform == "darwin":
+    # Miniconda 3.19 provided Python on OSX is built against OSX deployment target version 10.5
+    # this doesn't work with C++11 in libc++. Compiling without the following directive
+    # then gives a clang: error:
+    # invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)
+    kwds["extra_compile_args"].append('-mmacosx-version-min=10.7')
+    kwds["extra_compile_args"].append('-stdlib=libc++')
 
 utilities_module = Extension(
     'challenge.utilities',
